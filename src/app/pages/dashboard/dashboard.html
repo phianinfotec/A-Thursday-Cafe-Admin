@@ -1,0 +1,84 @@
+<div class="dashboard-container">
+
+  <!-- ================= SUMMARY CARDS ================= -->
+  <div class="stats-grid">
+
+    <div class="stat-card">
+      <p>Today's Orders</p>
+      <h2>{{ todayOrders }}</h2>
+    </div>
+
+    <div class="stat-card">
+      <p>Today's Earnings</p>
+      <h2>₹{{ todayEarning }}</h2>
+    </div>
+
+    <div class="stat-card">
+      <p>Completed Orders</p>
+      <h2>{{ completedOrders }}</h2>
+    </div>
+
+    <div class="stat-card">
+      <p>Pending Orders</p>
+      <h2>{{ pendingOrders }}</h2>
+    </div>
+
+  </div>
+
+  <!-- ================= SECOND ROW ================= -->
+  <div class="dashboard-row">
+
+    <!-- ACTIVE ORDERS TABLE -->
+    <div class="dashboard-card">
+      <h3>Active Orders (Last 5)</h3>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Active Time</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let order of activeOrders;let i = index">
+             <td>{{ i + 1 }}</td>
+              <td>{{ order.name }}</td>
+              <td>{{ order.time }}</td>
+              <td>₹{{ order.amount }}</td>
+              <td>
+                <span class="status-badge">{{ order.status }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GRAPH CARD -->
+    <div class="dashboard-card">
+      <h3>Orders & Earnings Overview</h3>
+
+      <!-- GRAPH PLACEHOLDER -->
+      <div class="graph-box">
+        <div class="bar-group">
+          <div class="bar orders" style="height: 70%"></div>
+          <span>Orders</span>
+        </div>
+
+        <div class="bar-group">
+          <div class="bar earnings" style="height: 90%"></div>
+          <span>Earnings</span>
+        </div>
+      </div>
+
+      <p class="graph-note">Day & Month wise analytics</p>
+    </div>
+
+  </div>
+
+</div>

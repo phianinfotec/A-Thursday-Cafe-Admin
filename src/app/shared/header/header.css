@@ -1,0 +1,117 @@
+/* Header background */
+.header {
+  position: sticky;
+  /* 🔥 STICKY HEADER */
+  top: 0;
+  z-index: 1000;
+  background-color: #9a3f0f;
+  color: #fff;
+}
+
+/* Container */
+.header-container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logo */
+.logo img {
+  height: 40px;
+}
+
+/* Navigation */
+.nav a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 28px;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.nav a:hover {
+  opacity: 0.8;
+}
+
+/* Logout button */
+.logout-btn {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 28px;
+  font-size: 14px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.logout-btn:hover {
+  opacity: 0.8;
+}
+
+/* Desktop */
+.desktop-nav {
+  display: flex;
+}
+
+/* Mobile */
+.menu-icon {
+  display: none;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+/* Mobile nav dropdown */
+.mobile-nav {
+  display: none;
+  flex-direction: column;
+  background-color: #9a3f0f;
+  padding: 10px 0;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+.mobile-nav.open {
+  transform: translateX(0);
+}
+
+.mobile-nav a {
+  padding: 12px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mobile-nav .logout-btn {
+  color: #fff;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.mobile-nav .logout-btn:hover {
+  opacity: 0.8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .desktop-nav {
+    display: none;
+  }
+
+  .menu-icon {
+    display: block;
+  }
+
+  .mobile-nav {
+    display: flex;
+  }
+}

@@ -1,0 +1,101 @@
+/* 🔒 Disable page scroll */
+:host {
+  display: block;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Main container */
+.login-container {
+  position: fixed; /* 🔥 fixed instead of relative */
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* 🔒 no scroll */
+  font-family: system-ui, sans-serif;
+}
+
+/* Background image */
+.login-bg {
+  position: fixed;
+  inset: -20px; /* 🔥 prevents blur overflow */
+  background-image: url('/assets/images/login-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: blur(10px);
+  z-index: 1;
+}
+
+/* Dark overlay */
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 2;
+}
+
+/* Login card */
+.login-card {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 380px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Form styling */
+.form-group {
+  margin-bottom: 16px;
+}
+
+label {
+  font-size: 14px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+input.error {
+  border-color: #dc2626;
+}
+
+.error-text {
+  color: #dc2626;
+  font-size: 12px;
+}
+
+.show-password {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background: #0f172a;
+  color: white;
+  border-radius: 6px;
+  border: none;
+}
+
+button:disabled {
+  background: #9ca3af;
+}
+
+/* Mobile fix */
+@media (max-width: 480px) {
+  .login-card {
+    margin: 0 16px;
+  }
+}

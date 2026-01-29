@@ -1,0 +1,158 @@
+<div class="products-container">
+  <div class="products-card">
+    <!-- TOP BAR -->
+    <div class="products-top-bar">
+      <h2>Products</h2>
+
+      <input
+        class="search-box"
+        placeholder="Search product..."
+        [(ngModel)]="searchText"
+        (input)="applyFilter()"
+      />
+
+      <button class="btn add" (click)="openAddModal()">+ Add Product</button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Earn Beans</th>
+            <th>Redeem Beans</th>
+            <th>Popular</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let p of filteredProducts; trackBy: trackByName">
+            <td>{{ p.name }}</td>
+            <td>{{ p.categoryName }}</td>
+            <td>₹{{ p.price }}</td>
+            <td>{{ p.earnBeans }}</td>
+            <td>{{ p.redeemBeans }}</td>
+            <td>
+              <span class="badge" [class.yes]="p.isPopular" [class.no]="!p.isPopular">
+                {{ p.isPopular ? 'Yes' : 'No' }}
+              </span>
+            </td>
+            <td>
+              <button class="btn edit" (click)="openEditModal(p)">Edit</button>
+              <button class="btn delete" (click)="confirmDelete(p)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ADD / EDIT MODAL -->
+<div class="modal-overlay" *ngIf="showAddModal">
+  <div class="modal-card">
+    <h3>Add Coffee Product</h3>
+
+    <input [(ngModel)]="newProduct.name" placeholder="Product Name" />
+    <select class="form-control" [(ngModel)]="newProduct.category">
+      <option value="" disabled selected>Select Category</option>
+      <option *ngFor="let c of categories" [value]="c.id">
+        {{ c.name }}
+      </option>
+    </select>
+
+    <textarea
+      [(ngModel)]="newProduct.description"
+      placeholder="Product Description"
+      rows="3"
+    ></textarea>
+
+    <input type="number" [(ngModel)]="newProduct.price" placeholder="Price" />
+    <input type="number" [(ngModel)]="newProduct.earnBeans" placeholder="Earn Beans" />
+    <input type="number" [(ngModel)]="newProduct.redeemBeans" placeholder="Redeem Beans" />
+
+    <div class="popular-row">
+      <span class="popular-label">Popular Product</span>
+
+      <label class="radio">
+        <input type="radio" name="popular" [value]="1" [(ngModel)]="newProduct.isPopular" />
+        Yes
+      </label>
+
+      <label class="radio">
+        <input type="radio" name="popular" [value]="0" [(ngModel)]="newProduct.isPopular" />
+        No
+      </label>
+    </div>
+
+    <input type="file" (change)="onImageChange($event, 'add')" />
+
+    <div class="modal-footer">
+      <button class="btn save" (click)="addProduct()">Save</button>
+      <button class="btn cancel" (click)="closeAddModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showEditModal && editProduct">
+  <div class="modal-card">
+    <h3>Edit Coffee Product</h3>
+
+    <input [(ngModel)]="editProduct.name" placeholder="Product Name" />
+
+    <select class="form-control" [(ngModel)]="editProduct.category">
+      <option value="" disabled>Select Category</option>
+      <option *ngFor="let c of categories" [value]="c.id">
+        {{ c.name }}
+      </option>
+    </select>
+
+    <textarea
+      [(ngModel)]="editProduct.description"
+      placeholder="Product Description"
+      rows="3"
+    ></textarea>
+
+    <input type="number" [(ngModel)]="editProduct.price" placeholder="Price" />
+    <input type="number" [(ngModel)]="editProduct.earnBeans" placeholder="Earn Beans" />
+    <input type="number" [(ngModel)]="editProduct.redeemBeans" placeholder="Redeem Beans" />
+    <div class="popular-row">
+      <span class="popular-label">Popular Product</span>
+
+      <label class="radio">
+        <input type="radio" name="popularEdit" [value]="1" [(ngModel)]="editProduct.isPopular" />
+        Yes
+      </label>
+
+      <label class="radio">
+        <input type="radio" name="popularEdit" [value]="0" [(ngModel)]="editProduct.isPopular" />
+        No
+      </label>
+    </div>
+
+    <input type="file" (change)="onImageChange($event, 'edit')" />
+
+    <div class="modal-footer">
+      <button class="btn save" (click)="updateProduct()">Update</button>
+      <button class="btn cancel" (click)="closeEditModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-overlay" *ngIf="showDeleteModal">
+  <div class="modal-card small">
+    <p>
+      Delete <strong>{{ productToDelete.name }}</strong
+      >?
+    </p>
+    <div class="modal-footer">
+      <button class="btn delete" (click)="deleteProduct()">Delete</button>
+      <button class="btn cancel" (click)="cancelDelete()">Cancel</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,88 @@
+<div class="relative min-h-screen flex items-center justify-center">
+
+  <!-- BACKGROUND IMAGE -->
+  <div
+    class="absolute inset-0 bg-cover bg-center blur-md scale-105"
+    style="background-image: url('assets/img/admin background.webp');">
+  </div>
+
+  <!-- DARK OVERLAY -->
+  <div class="absolute inset-0 bg-black/50"></div>
+
+  <!-- LOGIN CARD -->
+  <div
+    class="relative z-70 w-full max-w-md bg-white/95 backdrop-blur-sm
+           p-6 rounded-xl shadow-xl">
+
+    <h2 class="text-2xl font-bold text-center mb-6">
+      Admin Login
+    </h2>
+
+    <form [formGroup]="loginForm" (ngSubmit)="submit()">
+
+      <!-- EMAIL -->
+      <div class="mb-4">
+        <label class="text-sm font-medium">Email</label>
+        <input
+          type="email"
+          formControlName="email"
+          class="w-full p-2 border rounded focus:ring focus:outline-none"
+          [class.border-red-500]="submitted && loginForm.controls.email.invalid"
+          (input)="onInputChange()"
+        />
+
+        @if (submitted && loginForm.controls.email.errors) {
+          <p class="text-red-500 text-sm mt-1">
+            @if (loginForm.controls.email.errors['required']) {
+              Email is required
+            }
+            @if (loginForm.controls.email.errors['email']) {
+              Enter a valid email
+            }
+          </p>
+        }
+      </div>
+
+      <!-- PASSWORD -->
+      <div class="mb-4">
+        <label class="text-sm font-medium">Password</label>
+        <input
+          [type]="showPassword ? 'text' : 'password'"
+          formControlName="password"
+          class="w-full p-2 border rounded focus:ring focus:outline-none"
+          [class.border-red-500]="submitted && loginForm.controls.password.invalid"
+          (input)="onInputChange()"
+        />
+
+        @if (submitted && loginForm.controls.password.errors) {
+          <p class="text-red-500 text-sm mt-1">
+            @if (loginForm.controls.password.errors['required']) {
+              Password is required
+            }
+            @if (loginForm.controls.password.errors['minlength']) {
+              Minimum 6 characters required
+            }
+          </p>
+        }
+      </div>
+
+      <!-- ERROR MESSAGE -->
+      @if (error) {
+        <div class="mb-4 text-red-600 text-sm font-medium text-center">
+          {{ error }}
+        </div>
+      }
+
+      <!-- BUTTON -->
+      <button
+        class="w-full bg-slate-900 text-white py-2 rounded
+               disabled:bg-gray-400 hover:bg-slate-800 transition"
+        [disabled]="loginForm.invalid"
+      >
+        Login
+      </button>
+
+    </form>
+
+  </div>
+</div>

@@ -1,0 +1,112 @@
+/* =============================
+   PAGE BACKGROUND
+============================= */
+.error-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #6f4e37, #3e2723);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+/* =============================
+   COFFEE CUP
+============================= */
+.coffee-cup {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.cup {
+  width: 120px;
+  height: 80px;
+  border: 5px solid #fff;
+  border-radius: 0 0 20px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.coffee {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60%;
+  background: #6f4e37;
+  animation: coffeeFill 3s infinite;
+}
+
+@keyframes coffeeFill {
+  0% { height: 30%; }
+  50% { height: 70%; }
+  100% { height: 30%; }
+}
+
+/* =============================
+   STEAM
+============================= */
+.steam {
+  position: absolute;
+  width: 10px;
+  height: 40px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 50%;
+  top: -45px;
+  animation: steam 3s infinite;
+}
+
+.steam1 { left: 20px; animation-delay: 0s; }
+.steam2 { left: 50px; animation-delay: .5s; }
+.steam3 { left: 80px; animation-delay: 1s; }
+
+@keyframes steam {
+  0% { opacity: 0; transform: translateY(0); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-30px); }
+}
+
+/* =============================
+   TEXT
+============================= */
+h1 {
+  font-size: 96px;
+  margin: 10px 0;
+}
+
+h2 {
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+p {
+  opacity: .9;
+  margin-bottom: 20px;
+}
+
+/* =============================
+   BUTTON
+============================= */
+.btn-home {
+  background: #c89b3c;
+  border: none;
+  color: #3e2723;
+  padding: 12px 22px;
+  border-radius: 30px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform .2s ease;
+}
+
+.btn-home:hover {
+  transform: translateY(-2px);
+}
+
+/* =============================
+   RESPONSIVE
+============================= */
+@media (max-width: 480px) {
+  h1 { font-size: 72px; }
+}

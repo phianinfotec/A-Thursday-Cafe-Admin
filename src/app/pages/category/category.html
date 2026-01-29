@@ -1,0 +1,132 @@
+<div class="category-container">
+  <div class="category-card">
+
+    <!-- TOP BAR -->
+    <div class="category-top-bar">
+      <h2>Product Categories</h2>
+
+      <input
+        type="text"
+        class="search-box"
+        placeholder="Search category..."
+        [(ngModel)]="searchText"
+        (input)="applyFilter()"
+      />
+
+      <button class="btn add" (click)="openAdd()">+ Add Category</button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Category</th>
+            <th>Main Category</th>
+            <th>Earn Beans</th>
+            <th>Redeem Beans</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let cat of paginatedCategories; let i = index">
+            <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+            <td>{{ cat.category_name }}</td>
+            <td>{{ cat.main_category_name }}</td>
+            <td>{{ cat.earn_beans }}</td>
+            <td>{{ cat.redeem_beans }}</td>
+            <td>
+              <button class="btn view" (click)="openView(cat)">View</button>
+              <button class="btn edit" (click)="openEdit(cat)">Edit</button>
+              <button class="btn delete" (click)="openDelete(cat)">Delete</button>
+            </td>
+          </tr>
+
+          <tr *ngIf="paginatedCategories.length === 0">
+            <td colspan="6" class="no-data">No categories found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+        Prev
+      </button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+        Next
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal-overlay" *ngIf="showAdd" (click)="closeAll()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <h3>Add Category</h3>
+
+    <input placeholder="Category name" [(ngModel)]="newCategory.name" />
+
+    <select [(ngModel)]="newCategory.main_category_id">
+      <option value="">Select main category</option>
+      <option *ngFor="let mc of mainCategories" [value]="mc.id">
+        {{ mc.name }}
+      </option>
+    </select>
+
+    <div class="modal-footer">
+      <button class="btn save" (click)="addCategory()">Save</button>
+      <button class="btn cancel" (click)="closeAll()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" *ngIf="showEdit" (click)="closeAll()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <h3>Edit Category</h3>
+
+    <input [(ngModel)]="editCategory.category_name" />
+
+    <select [(ngModel)]="editCategory.main_category_id">
+      <option *ngFor="let mc of mainCategories" [value]="mc.id">
+        {{ mc.name }}
+      </option>
+    </select>
+
+    <div class="modal-footer">
+      <button class="btn save" (click)="updateCategory()">Update</button>
+      <button class="btn cancel" (click)="closeAll()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW MODAL -->
+<div class="modal-overlay" *ngIf="showView" (click)="closeAll()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <h3>Category Details</h3>
+
+    <p><b>Category:</b> {{ viewCategory.category_name }}</p>
+    <p><b>Main Category:</b> {{ viewCategory.main_category_name }}</p>
+
+    <div class="modal-footer">
+      <button class="btn cancel" (click)="closeAll()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-overlay" *ngIf="showDelete" (click)="closeAll()">
+  <div class="modal-card small" (click)="$event.stopPropagation()">
+    <p>Delete <b>{{ deleteCategory.category_name }}</b>?</p>
+
+    <div class="modal-footer">
+      <button class="btn delete" (click)="deleteCat()">Delete</button>
+      <button class="btn cancel" (click)="closeAll()">Cancel</button>
+    </div>
+  </div>
+</div>

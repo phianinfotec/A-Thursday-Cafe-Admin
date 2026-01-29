@@ -1,0 +1,200 @@
+<div class="orders-container">
+  <div class="orders-card">
+    <div class="orders-top-bar">
+      <h2 class="page-title">Orders</h2>
+
+      <input
+        type="text"
+        class="search-box"
+        placeholder="Search customer..."
+        [(ngModel)]="searchText"
+        (input)="applyFilter()"
+      />
+
+      <button class="btn add" (click)="goToAddOrder()">+ Add Order</button>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Customer Name</th>
+            <th>Order Date & Time</th>
+            <th>Status</th>
+            <th>Action</th>
+            <th>View</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let order of paginatedOrders; trackBy: trackById">
+            <td>{{ order.id }}</td>
+            <td>{{ order.customerName }}</td>
+            <td>{{ order.orderDate }}</td>
+            <td>{{ order.status }}</td>
+            <td>
+              <button class="btn delete" (click)="confirmDelete(order)">Delete</button>
+            </td>
+            <td>
+              <button class="btn view" (click)="viewOrder(order)">View</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ADD ORDER MODAL -->
+<div class="view-overlay" *ngIf="showAddOrderModal">
+  <div class="view-card">
+    <div class="view-header">
+      <h3>Add Order</h3>
+      <button class="close-btn" (click)="closeAddOrderModal()">✖</button>
+    </div>
+
+    <div class="view-body">
+      <input
+        type="text"
+        class="search-box"
+        placeholder="Enter customer mobile number"
+        [(ngModel)]="customerMobile"
+        (keyup)="onMobileChange()"
+      />
+
+      <input
+        type="text"
+        class="search-box"
+        placeholder="Customer name"
+        [(ngModel)]="customerName"
+        disabled
+      />
+
+      <button class="btn add" style="margin-top: 10px" (click)="addItemRow()">+ Add Item</button>
+
+      <div *ngIf="showItemSection" class="item-section">
+        <div
+          class="item-card"
+          *ngFor="let item of orderItems; let i = index; trackBy: trackById"
+        >
+          <select class="search-box" [(ngModel)]="item.product_id" (change)="onProductSelect(item)">
+            <option value="">Select Product</option>
+            <option *ngFor="let p of products" [value]="p.id">
+              {{ p.name }}
+            </option>
+          </select>
+
+          <div class="row">
+            <input
+              type="number"
+              min="1"
+              class="qty-box"
+              [(ngModel)]="item.qty"
+              (input)="onQtyChange(item)"
+              placeholder="Qty"
+            />
+
+            <span class="price">₹{{ item.price }}</span>
+          </div>
+
+          <div class="meta">Earn: {{ item.earn_beans }}% | Redeem: {{ item.redeem_beans }}%</div>
+
+          <div class="item-total">Item Total: ₹{{ item.total }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="totals" *ngIf="orderItems.length > 0">
+      <p><strong>Total Amount:</strong> ₹{{ grandTotal }}</p>
+      <p><strong>Earn Beans:</strong> {{ totalEarnBeans }}</p>
+      <p><strong>Redeem Beans:</strong> {{ totalRedeemBeans }}</p>
+    </div>
+
+    <div class="view-footer">
+      <button class="btn add" (click)="saveOrder()">Save Order</button>
+      <button class="btn edit" (click)="closeAddOrderModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- VIEW ORDER MODAL -->
+<div class="view-overlay" *ngIf="showViewModal && viewOrderData">
+  <div class="view-card">
+    <div class="view-header">
+      <h3>Order Details</h3>
+      <button class="close-btn" (click)="closeViewModal()">✖</button>
+    </div>
+
+    <div class="view-body">
+      <p><strong>Customer:</strong> {{ viewOrderData.customerName }}</p>
+      <p><strong>Mobile:</strong> {{ viewOrderData.mobile }}</p>
+      <p><strong>Date:</strong> {{ viewOrderData.date }}</p>
+      <p>
+        <strong>Status:</strong>
+        <span class="status pending">{{ viewOrderData.status }}</span>
+      </p>
+
+      <table class="order-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of viewOrderItems">
+            <td>{{ item.index }}</td>
+            <td>{{ item.product }}</td>
+            <td>{{ item.qty }}</td>
+            <td>₹{{ item.price }}</td>
+            <td>₹{{ item.total }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="summary">
+        <p><strong>Total Amount:</strong> ₹{{ viewOrderData.totalAmount }}</p>
+        <p><strong>Earned Beans:</strong> {{ viewOrderData.beansEarned }}</p>
+        <p><strong>Redeem Beans:</strong> {{ viewOrderData.beansDeducted }}</p>
+      </div>
+    </div>
+
+    <div class="view-footer">
+      <button class="btn view" (click)="closeViewModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="view-overlay" *ngIf="showDeleteModal && orderToDelete">
+  <div class="view-card">
+
+    <div class="view-header">
+      <h3>Confirm Delete</h3>
+      <button class="close-btn" (click)="cancelDelete()">✖</button>
+    </div>
+
+    <div class="view-body">
+      <p>
+        Are you sure you want to delete order
+        <strong>#{{ orderToDelete.id }}</strong>
+        of <strong>{{ orderToDelete.customerName }}</strong>?
+      </p>
+    </div>
+
+    <div class="view-footer">
+      <button class="btn delete" (click)="deleteOrder()">
+        Yes, Delete
+      </button>
+      <button class="btn edit" (click)="cancelDelete()">
+        Cancel
+      </button>
+    </div>
+
+  </div>
+</div>

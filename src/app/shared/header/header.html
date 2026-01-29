@@ -1,0 +1,37 @@
+<header class="header">
+  <div class="header-container">
+    <!-- LOGO -->
+    <div class="logo">
+      <img src="assets/img/AThursday3.png" alt="Thursday Logo" />
+    </div>
+
+    <!-- DESKTOP MENU -->
+    <nav class="nav desktop-nav">
+      <a routerLink="/dashboard">DASHBOARD</a>
+      <a routerLink="/home">HOME</a>
+      <a routerLink="/products">PRODUCTS</a>
+      <a routerLink="/category">CATEGORY</a>
+      <a routerLink="/main-category">MAIN CATEGORY</a>
+      <button (click)="logout()" class="logout-btn">LOGOUT</button>
+      <!-- <a routerLink="/products">PRODUCTS</a>
+      <a routerLink="/contact">CONTACT</a>
+      <a routerLink="/profile">PROFILE</a> -->
+    </nav>
+
+    <!-- MOBILE MENU ICON -->
+    <div class="menu-icon" (click)="toggleMenu()">☰</div>
+  </div>
+
+  <!-- MOBILE MENU -->
+  <nav class="nav mobile-nav" [class.open]="isMenuOpen">
+    <a routerLink="/dashboard">DASHBOARD</a>
+    <a routerLink="/home">HOME</a>
+    <a routerLink="/products">PRODUCTS</a>
+    <a routerLink="/category">CATEGORY</a>
+    <a routerLink="/main-category">MAIN CATEGORY</a>
+    <button (click)="logout()" class="logout-btn">LOGOUT</button>
+    <!-- <a routerLink="/products" (click)="toggleMenu()">PRODUCTS</a>
+    <a routerLink="/contact" (click)="toggleMenu()">CONTACT</a>
+    <a routerLink="/profile" (click)="toggleMenu()">PROFILE</a> -->
+  </nav>
+</header>

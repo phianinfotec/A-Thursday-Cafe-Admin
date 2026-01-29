@@ -1,0 +1,136 @@
+/* ================= PAGE ================= */
+.dashboard-container {
+  min-height: 100vh;
+  padding: 24px;
+  background: linear-gradient(135deg, #6f4e37, #3e2723);
+}
+
+/* ================= SUMMARY ================= */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: #fdfaf6;
+  padding: 20px;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 14px 35px rgba(0,0,0,.35);
+  transition: transform .3s;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+}
+
+.stat-card p {
+  margin: 0;
+  color: #6f4e37;
+  font-weight: 600;
+}
+
+.stat-card h2 {
+  margin-top: 6px;
+  color: #3e2723;
+}
+
+/* ================= LAYOUT ================= */
+.dashboard-row {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 20px;
+}
+
+.dashboard-card {
+  background: #fdfaf6;
+  padding: 20px;
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(0,0,0,.35);
+}
+
+/* ================= TABLE ================= */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: #f5efe6;
+  padding: 12px;
+  text-align: center;
+}
+
+td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #e0d6cc;
+}
+
+.status-badge {
+  background: #c89b3c;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+/* ================= GRAPH ================= */
+.graph-box {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  align-items: flex-end;
+  height: 220px;
+  margin-top: 20px;
+}
+
+.bar-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bar {
+  width: 40px;
+  border-radius: 10px;
+}
+
+.bar.orders {
+  background: #6f4e37;
+}
+
+.bar.earnings {
+  background: #c89b3c;
+}
+
+.graph-note {
+  text-align: center;
+  margin-top: 10px;
+  color: #6f4e37;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

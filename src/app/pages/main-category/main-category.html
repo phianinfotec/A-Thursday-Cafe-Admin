@@ -1,0 +1,66 @@
+<div class="page-container">
+
+  <!-- ADD MAIN CATEGORY -->
+  <div class="card">
+    <h3 class="card-title">Add Main Category</h3>
+
+    <div class="form-grid">
+      <input
+        type="text"
+        placeholder="Category Name"
+        [(ngModel)]="formData.name"
+      />
+
+      <input
+        type="text"
+        placeholder="Slug"
+        [(ngModel)]="formData.slug"
+      />
+
+      <input
+        type="number"
+        placeholder="Earn Beans"
+        [(ngModel)]="formData.earn_beans"
+      />
+
+      <input
+        type="number"
+        placeholder="Redeem Beans"
+        [(ngModel)]="formData.redeem_beans"
+      />
+    </div>
+
+    <button class="btn primary" (click)="submit()">
+      {{ isEdit ? 'Update' : 'Create' }}
+    </button>
+  </div>
+
+  <!-- LIST MAIN CATEGORIES -->
+  <div class="card">
+    <h3 class="card-title">All Main Categories</h3>
+
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Earn</th>
+          <th>Redeem</th>
+          <th class="actions">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let cat of categories">
+          <td>{{ cat.name }}</td>
+          <td>{{ cat.earn_beans }}</td>
+          <td>{{ cat.redeem_beans }}</td>
+          <td class="actions">
+            <button class="btn edit" (click)="edit(cat)">Edit</button>
+            <button class="btn delete" (click)="delete(cat.id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
