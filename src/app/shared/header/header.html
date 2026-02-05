@@ -1,37 +1,40 @@
 <header class="header">
+
   <div class="header-container">
-    <!-- LOGO -->
-    <div class="logo">
-      <img src="assets/img/AThursday3.png" alt="Thursday Logo" />
+
+    <!-- Logo -->
+    <div class="logo" routerLink="/dashboard">
+      <img src="assets/img/thursday logo png.png" alt="logo">
     </div>
 
-    <!-- DESKTOP MENU -->
-    <nav class="nav desktop-nav">
-      <a routerLink="/dashboard">DASHBOARD</a>
-      <a routerLink="/home">HOME</a>
-      <a routerLink="/products">PRODUCTS</a>
-      <a routerLink="/category">CATEGORY</a>
-      <a routerLink="/main-category">MAIN CATEGORY</a>
-      <button (click)="logout()" class="logout-btn">LOGOUT</button>
-      <!-- <a routerLink="/products">PRODUCTS</a>
-      <a routerLink="/contact">CONTACT</a>
-      <a routerLink="/profile">PROFILE</a> -->
+    <!-- Desktop nav -->
+    <nav class="desktop-nav">
+      <a routerLink="/dashboard">Dashboard</a>
+      <a routerLink="/banner">Banner</a>
+      <a routerLink="/orders">Orders</a>
+      <a routerLink="/products">Products</a>
+      <a routerLink="/category">Category</a>
+      <a routerLink="/main-category">Main Category</a>
+      <button class="logout-btn" (click)="logout()">Logout</button>
     </nav>
 
-    <!-- MOBILE MENU ICON -->
+    <!-- Hamburger -->
     <div class="menu-icon" (click)="toggleMenu()">☰</div>
+
   </div>
 
-  <!-- MOBILE MENU -->
-  <nav class="nav mobile-nav" [class.open]="isMenuOpen">
-    <a routerLink="/dashboard">DASHBOARD</a>
-    <a routerLink="/home">HOME</a>
-    <a routerLink="/products">PRODUCTS</a>
-    <a routerLink="/category">CATEGORY</a>
-    <a routerLink="/main-category">MAIN CATEGORY</a>
-    <button (click)="logout()" class="logout-btn">LOGOUT</button>
-    <!-- <a routerLink="/products" (click)="toggleMenu()">PRODUCTS</a>
-    <a routerLink="/contact" (click)="toggleMenu()">CONTACT</a>
-    <a routerLink="/profile" (click)="toggleMenu()">PROFILE</a> -->
-  </nav>
+  <!-- Mobile nav -->
+  <div class="mobile-nav" [class.open]="isMenuOpen">
+
+    <a routerLink="/dashboard" (click)="closeMenu()">Dashboard</a>
+    <a routerLink="/banner" (click)="closeMenu()">Banner</a>
+    <a routerLink="/orders" (click)="closeMenu()">Orders</a>
+    <a routerLink="/products" (click)="closeMenu()">Products</a>
+    <a routerLink="/category" (click)="closeMenu()">Category</a>
+    <a routerLink="/main-category" (click)="closeMenu()">Main Category</a>
+
+    <button class="logout-btn" (click)="logout()">Logout</button>
+
+  </div>
+
 </header>

@@ -15,7 +15,6 @@ export interface Category {
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-
   private http = inject(HttpClient);
   private apiUrl = `${environment.API_BASE_URL}/api/category`;
 
@@ -23,19 +22,19 @@ export class CategoryService {
     return this.http.get<Category[]>(this.apiUrl);
   }
 
-  addCategory(payload: {
-    name: string;
-    main_category_id: number;
-  }): Observable<any> {
-    return this.http.post(this.apiUrl, payload);
-  }
+addCategory(payload: { name: string; main_category_id: number }): Observable<any> {
+  return this.http.post(this.apiUrl, payload);
+}
 
-  updateCategory(id: number, payload: {
+ updateCategory(
+  id: number,
+  payload: {
     name: string;
     main_category_id: number;
-  }): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, payload);
-  }
+  },
+): Observable<any> {
+  return this.http.put(`${this.apiUrl}/${id}`, payload);
+}
 
   deleteCategory(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);

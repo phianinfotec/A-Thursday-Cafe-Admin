@@ -1,0 +1,110 @@
+<h2>Banner Management</h2>
+
+<button class="add-btn" (click)="openAddModal()">+ Add Banner</button>
+
+<table class="banner-table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Name</th>
+      <th>Image</th>
+      <th>Start Date</th>
+      <th>End Date</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let b of banners; let i = index">
+      <td>{{ i + 1 }}</td>
+      <td>{{ b.title }}</td>
+
+      <td>
+        <img
+          [src]="img_url + b.image_url"
+          class="banner-img"
+        />
+      </td>
+
+      <td>{{ b.start_time | date:'dd-MM-yyyy HH:mm' }}</td>
+      <td>{{ b.end_time | date:'dd-MM-yyyy HH:mm' }}</td>
+
+      <td>
+        <button
+          class="status-btn"
+          [class.active]="b.is_active"
+          (click)="toggleStatus(b)">
+          {{ b.is_active ? 'Active' : 'Inactive' }}
+        </button>
+      </td>
+
+      <td class="actions-col">
+        <button class="view-btn" (click)="viewBanner(b)">View</button>
+        <button class="delete-btn" (click)="deleteBanner(b.id, i)">Delete</button>
+      </td>
+    </tr>
+
+    <tr *ngIf="banners.length === 0">
+      <td colspan="7" class="no-data">No banners found</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ================= MODAL ================= -->
+<div class="modal-backdrop" *ngIf="showModal">
+  <div class="modal">
+
+    <h3>{{ viewMode ? 'View Banner' : 'Add Banner' }}</h3>
+
+    <input
+      type="text"
+      placeholder="Banner Name"
+      [(ngModel)]="title"
+      [disabled]="viewMode"
+    />
+
+    <input
+      type="datetime-local"
+      [(ngModel)]="startTime"
+      [disabled]="viewMode"
+    />
+
+    <input
+      type="datetime-local"
+      [(ngModel)]="endTime"
+      [disabled]="viewMode"
+    />
+
+    <input
+      *ngIf="!viewMode"
+      type="file"
+      (change)="onFileChange($event)"
+    />
+
+    <img
+      *ngIf="preview"
+      [src]="preview"
+      class="preview-img"
+    />
+
+    <select [(ngModel)]="isActive" [disabled]="viewMode">
+      <option value="1">Active</option>
+      <option value="0">Inactive</option>
+    </select>
+
+    <div class="actions">
+      <button
+        *ngIf="!viewMode"
+        class="save"
+        (click)="submitBanner()">
+        Save
+      </button>
+
+      <button class="cancel" (click)="closeModal()">
+        Close
+      </button>
+    </div>
+
+  </div>
+</div>

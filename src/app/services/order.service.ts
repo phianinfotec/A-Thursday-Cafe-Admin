@@ -1,12 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:5000/api/order';
-  private API = 'http://localhost:5000/api';
+  private apiUrl = `${environment.API_BASE_URL}/api/order`;
+  private API = `${environment.API_BASE_URL}/api`;
 
   getCustomerByMobile(mobile: string) {
     return this.http.get<any>(`${this.apiUrl}/customer/${mobile}`);

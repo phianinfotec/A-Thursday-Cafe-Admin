@@ -7,6 +7,7 @@ import { CategoryComponent } from './pages/category/category';
 import { authGuard } from './auth/auth.guard';
 import { HomeComponent } from './pages/home/home';
 import { MainCategoryComponent } from './pages/main-category/main-category';
+import { BannerComponent } from './pages/banner/banner';
 
 export const routes: Routes = [
 
@@ -23,7 +24,8 @@ export const routes: Routes = [
     canMatch: [authGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
-      { path: 'home', component: HomeComponent },
+      { path: 'banner', component: BannerComponent },
+      { path: 'orders', component: HomeComponent },
       { path: 'products', component: ProductsComponent },
       { path: 'category', component: CategoryComponent },
       { path: 'main-category', component: MainCategoryComponent },

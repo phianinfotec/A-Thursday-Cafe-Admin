@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Product {
   id: number;
@@ -19,10 +20,10 @@ export interface Product {
 export class ProductService {
 
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:5000/api/product';
+  private apiUrl = `${environment.API_BASE_URL}/api/product`;
 
   getProducts(): Observable<{ success: boolean; data: Product[] }> {
-    return this.http.get<{ success: boolean; data: Product[] }>(this.apiUrl);
+    return this.http.get<{ success: boolean; data: Product[] }>(`${this.apiUrl}/admin`);;
   }
 
   addProduct(formData: FormData): Observable<any> {

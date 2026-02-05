@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy } from '@angular/core';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { filter, Subscription } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -18,18 +18,25 @@ export class HeaderComponent implements OnDestroy {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  private navSub = this.router.events
-    .pipe(filter(event => event instanceof NavigationEnd))
-    .subscribe(() => {
-      // ✅ close menu AFTER navigation completes
-      this.isMenuOpen = false;
-    });
+  private navSub: Subscription;
+
+  constructor() {
+    // auto close menu on route change
+    this.navSub = this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => this.closeMenu());
+  }
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
   }
 
+  closeMenu() {
+    this.isMenuOpen = false;
+  }
+
   logout() {
+    this.closeMenu();
     this.authService.logout();
     this.router.navigate(['/login']);
   }

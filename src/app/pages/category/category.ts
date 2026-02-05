@@ -13,7 +13,6 @@ import { MainCategoryService } from '../../services/main-category.service';
   styleUrls: ['./category.css'],
 })
 export class CategoryComponent implements OnInit {
-
   private categoryService = inject(CategoryService);
   private mainCategoryService = inject(MainCategoryService);
 
@@ -46,13 +45,13 @@ export class CategoryComponent implements OnInit {
 
   // ---------------- LOAD DATA ----------------
   loadMainCategories() {
-    this.mainCategoryService.getAll().subscribe(res => {
+    this.mainCategoryService.getAll().subscribe((res) => {
       this.mainCategories = res?.data || [];
     });
   }
 
   loadCategories() {
-    this.categoryService.getCategories().subscribe(data => {
+    this.categoryService.getCategories().subscribe((data) => {
       this.categories = data || [];
       this.applyFilter();
     });
@@ -62,9 +61,7 @@ export class CategoryComponent implements OnInit {
   applyFilter() {
     const term = this.searchText.toLowerCase();
     this.filteredCategories = term
-      ? this.categories.filter(c =>
-          c.category_name.toLowerCase().includes(term)
-        )
+      ? this.categories.filter((c) => c.category_name.toLowerCase().includes(term))
       : [...this.categories];
 
     this.totalPages = Math.ceil(this.filteredCategories.length / this.pageSize);
@@ -74,10 +71,7 @@ export class CategoryComponent implements OnInit {
 
   updatePagination() {
     const start = (this.currentPage - 1) * this.pageSize;
-    this.paginatedCategories = this.filteredCategories.slice(
-      start,
-      start + this.pageSize
-    );
+    this.paginatedCategories = this.filteredCategories.slice(start, start + this.pageSize);
   }
 
   changePage(p: number) {
@@ -112,24 +106,28 @@ export class CategoryComponent implements OnInit {
   }
 
   // ---------------- CRUD ----------------
-  addCategory() {
-    if (!this.newCategory.name || !this.newCategory.main_category_id) return;
+ addCategory() {
+  if (!this.newCategory.name || !this.newCategory.main_category_id) return;
 
-    this.closeAll(); // 🔥 close first (FAST UX)
-    this.categoryService.addCategory(this.newCategory)
-      .subscribe(() => this.loadCategories());
-  }
+  const payload = {
+    name: this.newCategory.name,          // 🔥 backend wants "name"
+    main_category_id: this.newCategory.main_category_id
+  };
+
+  this.closeAll();
+  this.categoryService.addCategory(payload)
+    .subscribe(() => this.loadCategories());
+}
 
   updateCategory() {
     this.closeAll(); // 🔥 close first
 
-    this.categoryService.updateCategory(
-      this.editCategory.category_id,
-      {
+    this.categoryService
+      .updateCategory(this.editCategory.category_id, {
         name: this.editCategory.category_name,
-        main_category_id: this.editCategory.main_category_id
-      }
-    ).subscribe(() => this.loadCategories());
+        main_category_id: this.editCategory.main_category_id,
+      })
+      .subscribe(() => this.loadCategories());
   }
 
   deleteCat() {

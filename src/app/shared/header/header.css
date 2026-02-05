@@ -1,108 +1,137 @@
-/* Header background */
-.header {
-  position: sticky;
-  /* 🔥 STICKY HEADER */
-  top: 0;
-  z-index: 1000;
-  background-color: #9a3f0f;
-  color: #fff;
+/* ================= GLOBAL ================= */
+* {
+  box-sizing: border-box;
 }
 
-/* Container */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+
+/* ================= HEADER ================= */
+.header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background-color: #9a3f0f;
+  z-index: 1000;
+}
+
+
+/* ================= CONTAINER ================= */
 .header-container {
   max-width: 1200px;
   margin: auto;
-  padding: 14px 24px;
+
+  padding: 0 24px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  height: 72px;   /* ⭐ bigger header = better logo look */
 }
 
-/* Logo */
-.logo img {
-  height: 40px;
-}
 
-/* Navigation */
-.nav a {
-  color: #fff;
-  text-decoration: none;
-  margin-left: 28px;
-  font-size: 14px;
-  letter-spacing: 1px;
-}
+/* ================= LOGO (PROPER ARRANGEMENT) ================= */
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-.nav a:hover {
-  opacity: 0.8;
-}
+  height: 100%;
+  min-width: 120px;   /* gives breathing space */
+  flex-shrink: 0;
 
-/* Logout button */
-.logout-btn {
-  color: #fff;
-  text-decoration: none;
-  margin-left: 28px;
-  font-size: 14px;
-  letter-spacing: 1px;
   cursor: pointer;
+}
+
+.logo img {
+  max-height: 48px;   /* ⭐ clean & bold */
+  height: auto;
+  width: auto;
+
+  display: block;
+  object-fit: contain;
+}
+
+
+/* ================= DESKTOP NAV ================= */
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+.desktop-nav a,
+.logout-btn {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
   background: none;
   border: none;
-  padding: 0;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
+.desktop-nav a:hover,
 .logout-btn:hover {
   opacity: 0.8;
 }
 
-/* Desktop */
-.desktop-nav {
+
+/* ================= MENU ICON ================= */
+.menu-icon {
+  display: none;
+  font-size: 28px;
+  color: white;
+  cursor: pointer;
+}
+
+
+/* ================= MOBILE NAV ================= */
+.mobile-nav {
+  position: fixed;
+  top: 72px;
+  left: 0;
+  width: 100%;
+
+  background-color: #9a3f0f;
+
   display: flex;
+  flex-direction: column;
+
+  transform: translateY(-120%);
+  transition: transform 0.3s ease;
+}
+
+.mobile-nav.open {
+  transform: translateY(0);
+}
+
+.mobile-nav a,
+.mobile-nav .logout-btn {
+  padding: 14px 22px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  text-align: left;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+/* Tablet */
+@media (max-width: 992px) {
+  .logo img {
+    max-height: 42px;
+  }
 }
 
 /* Mobile */
-.menu-icon {
-  display: none;
-  font-size: 26px;
-  cursor: pointer;
-}
-
-/* Mobile nav dropdown */
-.mobile-nav {
-  display: none;
-  flex-direction: column;
-  background-color: #9a3f0f;
-  padding: 10px 0;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
-}
-.mobile-nav.open {
-  transform: translateX(0);
-}
-
-.mobile-nav a {
-  padding: 12px 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.mobile-nav .logout-btn {
-  color: #fff;
-  text-decoration: none;
-  padding: 12px 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  background: none;
-  border: none;
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-  font-size: 14px;
-  letter-spacing: 1px;
-}
-
-.mobile-nav .logout-btn:hover {
-  opacity: 0.8;
-}
-
-/* Responsive */
 @media (max-width: 768px) {
+
   .desktop-nav {
     display: none;
   }
@@ -111,7 +140,18 @@
     display: block;
   }
 
-  .mobile-nav {
-    display: flex;
+  .header-container {
+    height: 64px;
+  }
+
+  .logo img {
+    max-height: 38px;
+  }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+  .logo img {
+    max-height: 34px;
   }
 }
