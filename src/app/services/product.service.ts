@@ -20,7 +20,7 @@ export interface Product {
 export class ProductService {
 
   private http = inject(HttpClient);
-  private apiUrl = `${environment.API_BASE_URL}/api/product`;
+  private apiUrl = `${environment.API_BASE_URL}/product`;
 
   getProducts(): Observable<{ success: boolean; data: Product[] }> {
     return this.http.get<{ success: boolean; data: Product[] }>(`${this.apiUrl}/admin`);;

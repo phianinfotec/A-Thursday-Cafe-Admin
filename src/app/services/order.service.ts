@@ -6,8 +6,8 @@ import { environment } from '../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.API_BASE_URL}/api/order`;
-  private API = `${environment.API_BASE_URL}/api`;
+  private apiUrl = `${environment.API_BASE_URL}/order`;
+  private API = `${environment.API_BASE_URL}`;
 
   getCustomerByMobile(mobile: string) {
     return this.http.get<any>(`${this.apiUrl}/customer/${mobile}`);
@@ -31,7 +31,7 @@ export class OrderService {
 // }
 getOrderDetails(id: number) {
   return this.http.get<{ success: boolean; data: any }>(
-    `http://localhost:5000/api/order/ordersDetails/${id}`
+    `${this.API}/order/ordersDetails/${id}`
   );
 }
 

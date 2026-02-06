@@ -7,7 +7,7 @@ import { of, tap } from 'rxjs';
 export class BannerService {
 
   // ⚠️ backend prefix already /api/banner hai
-  private api = environment.API_URL + '/banner';
+  private api = environment.API_BASE_URL + '/banner';
   private activeBannerCache: any = null;
 
   constructor(private http: HttpClient) {}

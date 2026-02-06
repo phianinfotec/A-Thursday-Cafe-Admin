@@ -16,7 +16,7 @@ export interface Category {
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.API_BASE_URL}/api/category`;
+  private apiUrl = `${environment.API_BASE_URL}/category`;
 
   getCategories(): Observable<Category[]> {
     return this.http.get<Category[]>(this.apiUrl);
