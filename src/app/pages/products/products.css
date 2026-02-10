@@ -15,12 +15,6 @@
   border-radius: 18px;
   padding: 22px;
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.products-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.45);
 }
 
 /* ==============================
@@ -63,17 +57,12 @@
 ============================== */
 .table-wrapper {
   overflow-x: auto;
-}
-
-input, select {
-  width: 100%;
-  padding: 14px;
-  border-radius: 14px;
-  background: #f5efe9;
+  -webkit-overflow-scrolling: touch;
 }
 
 table {
   width: 100%;
+  min-width: 760px; /* 🔥 mobile scroll safety */
   border-collapse: collapse;
 }
 
@@ -89,53 +78,31 @@ td {
   border-bottom: 1px solid #e0d6cc;
   text-align: left;
 }
-.form-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 14px;
-}
-
-/* CHECKBOX */
-.checkbox {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-
-tbody tr {
-  transition: background 0.25s ease;
-}
 
 tbody tr:hover {
   background: #fff3e0;
 }
 
-.popular-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin: 14px 0;
-}
-
-.popular-label {
+/* ==============================
+   FORM ELEMENTS
+============================== */
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid #d7ccc8;
+  background: #f5efe9;
   font-size: 14px;
-  color: #444;
-  min-width: 120px;
 }
 
-.radio {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  cursor: pointer;
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #c89b3c;
 }
-
 
 /* ==============================
    BUTTONS
@@ -147,59 +114,32 @@ tbody tr:hover {
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
 }
 
 .btn.add {
   background: linear-gradient(135deg, #6f4e37, #3e2723);
-  color: #ffffff;
+  color: #fff;
 }
 
 .btn.edit {
   background: linear-gradient(135deg, #c89b3c, #b07d2b);
-  color: #ffffff;
+  color: #fff;
 }
 
 .btn.delete {
   background: linear-gradient(135deg, #b71c1c, #7f0000);
-  color: #ffffff;
+  color: #fff;
 }
 
 .btn.save {
   background: linear-gradient(135deg, #6f4e37, #3e2723);
-  color: #ffffff;
+  color: #fff;
 }
 
 .btn.cancel {
   background: #9e9e9e;
-  color: #ffffff;
+  color: #fff;
 }
-/* ===== Product Description (Minimal Add) ===== */
-.products-card textarea,
-.modal-card textarea {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 6px 8px;
-  font-size: 14px;
-  font-family: inherit;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  resize: vertical;
-  margin-top: 6px;
-}
-
-/* Optional: focus same as input */
-.products-card textarea:focus,
-.modal-card textarea:focus {
-  outline: none;
-  border-color: #007bff;
-}
-
 
 /* ==============================
    MODAL OVERLAY
@@ -207,53 +147,36 @@ tbody tr:hover {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(62, 39, 35, 0.85);
+  background: rgba(62, 39, 35, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 3000;
+  padding: 16px;
 }
 
 /* ==============================
-   MODAL CARD
+   MODAL CARD (IMPROVED ADD DESIGN)
 ============================== */
 .modal-card {
   background: #fdfaf6;
   width: 100%;
   max-width: 440px;
   padding: 22px;
-  border-radius: 20px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
-  animation: coffeePop 0.35s ease;
+  border-radius: 22px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+  animation: modalPop 0.35s ease;
 }
 
-@keyframes coffeePop {
+@keyframes modalPop {
   from {
-    transform: scale(0.9);
+    transform: translateY(30px) scale(0.95);
     opacity: 0;
   }
   to {
-    transform: scale(1);
+    transform: translateY(0) scale(1);
     opacity: 1;
   }
-}
-
-/* ==============================
-   MODAL FORM INPUTS
-============================== */
-.modal-card input {
-  width: 100%;
-  padding: 11px 14px;
-  border-radius: 12px;
-  border: 1px solid #d7ccc8;
-  background: #f5efe6;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-.modal-card input:focus {
-  outline: none;
-  border-color: #c89b3c;
 }
 
 /* ==============================
@@ -261,7 +184,7 @@ tbody tr:hover {
 ============================== */
 .image-upload {
   text-align: center;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .image-preview {
@@ -277,7 +200,7 @@ tbody tr:hover {
 .upload-btn {
   display: inline-block;
   background: linear-gradient(135deg, #6f4e37, #3e2723);
-  color: #ffffff;
+  color: #fff;
   padding: 8px 16px;
   border-radius: 20px;
   cursor: pointer;
@@ -291,7 +214,7 @@ tbody tr:hover {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 14px;
+  margin-top: 16px;
 }
 
 /* ==============================
@@ -309,9 +232,22 @@ tbody tr:hover {
 }
 
 @media (max-width: 480px) {
+  .products-container {
+    padding: 14px;
+  }
+
+  .products-card {
+    padding: 16px;
+  }
+
+  table {
+    min-width: 720px;
+  }
+
   .modal-card {
-    max-width: 95%;
+    max-width: 100%;
     padding: 18px;
+    border-radius: 18px;
   }
 
   .modal-footer {

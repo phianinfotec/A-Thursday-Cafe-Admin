@@ -21,22 +21,16 @@
       <table>
         <thead>
           <tr>
-            <th>#</th>
             <th>Category</th>
             <th>Main Category</th>
-            <th>Earn Beans</th>
-            <th>Redeem Beans</th>
             <th>Action</th>
           </tr>
         </thead>
 
         <tbody>
           <tr *ngFor="let cat of paginatedCategories; let i = index">
-            <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
             <td>{{ cat.category_name }}</td>
             <td>{{ cat.main_category_name }}</td>
-            <td>{{ cat.earn_beans }}</td>
-            <td>{{ cat.redeem_beans }}</td>
             <td>
               <button class="btn view" (click)="openView(cat)">View</button>
               <button class="btn edit" (click)="openEdit(cat)">Edit</button>

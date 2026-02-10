@@ -50,7 +50,7 @@ body {
 }
 
 .logo img {
-  max-height: 48px;   /* ⭐ clean & bold */
+  max-height: 180px;   /* ⭐ clean & bold */
   height: auto;
   width: auto;
 
@@ -125,7 +125,7 @@ body {
 /* Tablet */
 @media (max-width: 992px) {
   .logo img {
-    max-height: 42px;
+    max-height: 130px;
   }
 }
 
@@ -145,13 +145,13 @@ body {
   }
 
   .logo img {
-    max-height: 38px;
+    max-height: 130px;
   }
 }
 
 /* Small phones */
 @media (max-width: 480px) {
   .logo img {
-    max-height: 34px;
+    max-height: 130px;
   }
 }

@@ -1,5 +1,7 @@
 <div class="orders-container">
   <div class="orders-card">
+
+    <!-- TOP BAR -->
     <div class="orders-top-bar">
       <h2 class="page-title">Orders</h2>
 
@@ -14,6 +16,7 @@
       <button class="btn add" (click)="goToAddOrder()">+ Add Order</button>
     </div>
 
+    <!-- TABLE -->
     <div class="table-wrapper">
       <table>
         <thead>
@@ -43,18 +46,22 @@
         </tbody>
       </table>
     </div>
+
   </div>
 </div>
 
-<!-- ADD ORDER MODAL -->
+<!-- ================= ADD ORDER MODAL ================= -->
 <div class="view-overlay" *ngIf="showAddOrderModal">
   <div class="view-card">
+
     <div class="view-header">
       <h3>Add Order</h3>
       <button class="close-btn" (click)="closeAddOrderModal()">✖</button>
     </div>
 
     <div class="view-body">
+
+      <!-- CUSTOMER -->
       <input
         type="text"
         class="search-box"
@@ -71,13 +78,12 @@
         disabled
       />
 
-      <button class="btn add" style="margin-top: 10px" (click)="addItemRow()">+ Add Item</button>
+      <!-- ITEMS -->
+      <button class="btn add" style="margin-top:10px" (click)="addItemRow()">+ Add Item</button>
 
-      <div *ngIf="showItemSection" class="item-section">
-        <div
-          class="item-card"
-          *ngFor="let item of orderItems; let i = index; trackBy: trackById"
-        >
+      <div *ngIf="showItemSection">
+        <div class="item-card" *ngFor="let item of orderItems; trackBy: trackById">
+
           <select class="search-box" [(ngModel)]="item.product_id" (change)="onProductSelect(item)">
             <option value="">Select Product</option>
             <option *ngFor="let p of products" [value]="p.id">
@@ -94,107 +100,94 @@
               (input)="onQtyChange(item)"
               placeholder="Qty"
             />
-
             <span class="price">₹{{ item.price }}</span>
           </div>
 
-          <div class="meta">Earn: {{ item.earn_beans }}% | Redeem: {{ item.redeem_beans }}%</div>
+          <div class="meta">
+            Earn: {{ item.earn_beans }}% | Redeem: {{ item.redeem_beans }}%
+          </div>
 
           <div class="item-total">Item Total: ₹{{ item.total }}</div>
         </div>
       </div>
-    </div>
-    <div class="totals" *ngIf="orderItems.length > 0">
-      <p><strong>Total Amount:</strong> ₹{{ grandTotal }}</p>
-      <p><strong>Earn Beans:</strong> {{ totalEarnBeans }}</p>
-      <p><strong>Redeem Beans:</strong> {{ totalRedeemBeans }}</p>
+
+      <!-- TOTALS -->
+      <div class="totals" *ngIf="orderItems.length">
+        <p><strong>Total Amount:</strong> ₹{{ grandTotal }}</p>
+        <p><strong>Earn Beans:</strong> {{ totalEarnBeans }}</p>
+        <p><strong>Redeem Beans:</strong> {{ totalRedeemBeans }}</p>
+      </div>
+
+      <!-- PAYMENT (INSIDE MODAL) -->
+      <div class="payment-box" *ngIf="orderItems.length">
+
+        <strong>Payment Type</strong>
+        <div class="payment-row">
+          <label><input type="radio" value="FULL" [(ngModel)]="paymentType"> Full</label>
+          <label><input type="radio" value="PARTIAL" [(ngModel)]="paymentType"> Partial</label>
+        </div>
+
+        <input
+          *ngIf="paymentType === 'PARTIAL'"
+          type="number"
+          class="amount-input"
+          placeholder="Enter paid amount"
+          [(ngModel)]="paidAmount"
+        />
+
+        <strong style="margin-top:10px;display:block">Payment Mode</strong>
+        <div class="payment-row">
+          <label><input type="radio" value="CASH" [(ngModel)]="paymentMode"> Cash</label>
+          <label><input type="radio" value="ONLINE" [(ngModel)]="paymentMode"> Online</label>
+        </div>
+
+      </div>
+
     </div>
 
+    <!-- FOOTER -->
     <div class="view-footer">
       <button class="btn add" (click)="saveOrder()">Save Order</button>
       <button class="btn edit" (click)="closeAddOrderModal()">Cancel</button>
     </div>
+
   </div>
 </div>
 
+<!-- ================= QR PAGE ================= -->
+<div class="qr-overlay" *ngIf="showQRPage">
+  <div class="qr-card">
+    <h3>Scan & Pay</h3>
+    <p><strong>{{ customerName }}</strong></p>
+    <p>{{ customerMobile }}</p>
 
-<!-- VIEW ORDER MODAL -->
-<div class="view-overlay" *ngIf="showViewModal && viewOrderData">
-  <div class="view-card">
-    <div class="view-header">
-      <h3>Order Details</h3>
-      <button class="close-btn" (click)="closeViewModal()">✖</button>
-    </div>
+    <div class="qr-box">QR</div>
 
-    <div class="view-body">
-      <p><strong>Customer:</strong> {{ viewOrderData.customerName }}</p>
-      <p><strong>Mobile:</strong> {{ viewOrderData.mobile }}</p>
-      <p><strong>Date:</strong> {{ viewOrderData.date }}</p>
-      <p>
-        <strong>Status:</strong>
-        <span class="status pending">{{ viewOrderData.status }}</span>
-      </p>
+    <p><strong>Amount:</strong> ₹{{ payableAmount }}</p>
+    <p class="timer">Time Left: {{ qrTimer }}s</p>
 
-      <table class="order-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Product</th>
-            <th>Qty</th>
-            <th>Price</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of viewOrderItems">
-            <td>{{ item.index }}</td>
-            <td>{{ item.product }}</td>
-            <td>{{ item.qty }}</td>
-            <td>₹{{ item.price }}</td>
-            <td>₹{{ item.total }}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div class="summary">
-        <p><strong>Total Amount:</strong> ₹{{ viewOrderData.totalAmount }}</p>
-        <p><strong>Earned Beans:</strong> {{ viewOrderData.beansEarned }}</p>
-        <p><strong>Redeem Beans:</strong> {{ viewOrderData.beansDeducted }}</p>
-      </div>
-    </div>
-
-    <div class="view-footer">
-      <button class="btn view" (click)="closeViewModal()">Close</button>
-    </div>
+    <button class="btn delete" (click)="cancelQR()">Cancel</button>
+    <button class="btn view" (click)="paymentDone()">Payment Done</button>
   </div>
 </div>
 
+<!-- ================= PRINT ================= -->
+<div class="print-overlay" *ngIf="showPrint">
+  <div class="print-bill">
+    <h4>COFFEE HOUSE</h4>
+    <p>{{ customerName }}</p>
+    <p>{{ customerMobile }}</p>
+    <hr>
 
-<!-- DELETE CONFIRM MODAL -->
-<div class="view-overlay" *ngIf="showDeleteModal && orderToDelete">
-  <div class="view-card">
-
-    <div class="view-header">
-      <h3>Confirm Delete</h3>
-      <button class="close-btn" (click)="cancelDelete()">✖</button>
+    <div *ngFor="let item of orderItems">
+      {{ item.name }} x{{ item.qty }}<br>
+      ₹{{ item.total }}
     </div>
 
-    <div class="view-body">
-      <p>
-        Are you sure you want to delete order
-        <strong>#{{ orderToDelete.id }}</strong>
-        of <strong>{{ orderToDelete.customerName }}</strong>?
-      </p>
-    </div>
+    <hr>
+    <strong>Total: ₹{{ payableAmount }}</strong>
+    <p>{{ today | date:'short' }}</p>
 
-    <div class="view-footer">
-      <button class="btn delete" (click)="deleteOrder()">
-        Yes, Delete
-      </button>
-      <button class="btn edit" (click)="cancelDelete()">
-        Cancel
-      </button>
-    </div>
-
+    <button class="btn view" (click)="printBill()">Print</button>
   </div>
 </div>
