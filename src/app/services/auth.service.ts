@@ -2,6 +2,7 @@ import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../environments/environment';
+import { tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -14,9 +15,18 @@ export class AuthService {
   ) {}
 
   // 🔐 LOGIN API
-  login(payload: { email: string; password: string }) {
-    return this.http.post<any>(`${this.apiUrl}/login`, payload);
-  }
+ login(payload: { email: string; password: string }) {
+  return this.http.post<any>(`${this.apiUrl}/login`, payload)
+    .pipe(
+      tap(res => {
+        const token = res.token || res.data?.token;
+        if (token) {
+          this.saveToken(token);
+        }
+      })
+    );
+}
+
 
   // ✅ SAVE TOKEN (IMPORTANT FIX)
   saveToken(token: string) {

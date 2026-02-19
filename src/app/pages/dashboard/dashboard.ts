@@ -1,36 +1,42 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { dashboardService } from '../../services/dashboard.service';
 import { CommonModule } from '@angular/common';
-
-interface ActiveOrder {
-  id: number;
-  name: string;
-  time: string;
-  amount: number;
-  status: string;
-}
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-dashboard',
-  standalone: true,
-  imports: [CommonModule],
   templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.css']
+  imports: [CommonModule, FormsModule],
+  styleUrls: ['./dashboard.css'],
 })
-export class DashboardComponent {
+export class dashboardComponent implements OnInit {
+  dashboardData: any;
+  selectedCustomer: any;
 
-  /* SUMMARY */
-  todayOrders = 32;
-  todayEarning = 5680;
-  completedOrders = 22;
-  pendingOrders = 10;
+  constructor(
+    private dashboardService: dashboardService,
+    private cd: ChangeDetectorRef,
+  ) {}
 
-  /* LAST 5 ACTIVE ORDERS */
-  activeOrders: ActiveOrder[] = [
-    { id: 201, name: 'Rahul Sharma', time: '5 min ago', amount: 320, status: 'Preparing' },
-    { id: 202, name: 'Neha Verma', time: '8 min ago', amount: 210, status: 'Brewing' },
-    { id: 203, name: 'Amit Singh', time: '12 min ago', amount: 450, status: 'Ready' },
-    { id: 204, name: 'Pooja Mehta', time: '15 min ago', amount: 280, status: 'Preparing' },
-    { id: 205, name: 'Karan Patel', time: '18 min ago', amount: 390, status: 'Brewing' }
-  ];
+  ngOnInit(): void {
+    this.loadDashboard();
+  }
 
+  loadDashboard() {
+    this.dashboardService.getDashboard().subscribe((res: any) => {
+      this.dashboardData = res.data;
+      this.cd.detectChanges(); // 🔥 instant update
+    });
+  }
+
+  viewCustomer(id: number) {
+    this.dashboardService.getCustomerDetails(id).subscribe((res: any) => {
+      this.selectedCustomer = res.data;
+       this.cd.detectChanges(); // 🔥 instant update
+    });
+  }
+
+  closeModal() {
+  this.selectedCustomer = null;
+}
 }

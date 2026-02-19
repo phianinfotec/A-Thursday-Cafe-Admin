@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './auth/login/login';
 import { MainLayout } from './shared/main-layout/main-layout';
-import { DashboardComponent } from './pages/dashboard/dashboard';
+import { dashboardComponent } from './pages/dashboard/dashboard';
 import { ProductsComponent } from './pages/products/products';
 import { CategoryComponent } from './pages/category/category';
 import { authGuard } from './auth/auth.guard';
@@ -23,7 +23,7 @@ export const routes: Routes = [
     component: MainLayout,
     canMatch: [authGuard],
     children: [
-      { path: 'dashboard', component: DashboardComponent },
+      { path: 'dashboard', component: dashboardComponent },
       { path: 'banner', component: BannerComponent },
       { path: 'orders', component: HomeComponent },
       { path: 'products', component: ProductsComponent },

@@ -19,31 +19,48 @@
       <table>
         <thead>
           <tr>
+            <th>Image</th>
+
             <th>Name</th>
+            <th>Main Category</th>
             <th>Category</th>
             <th>Price</th>
-            <th>Earn Beans</th>
-            <th>Redeem Beans</th>
+            <th>Earn %</th>
+            <th>Redeem %</th>
             <th>Popular</th>
             <th>Action</th>
           </tr>
         </thead>
 
         <tbody>
-          <tr *ngFor="let p of filteredProducts; trackBy: trackByName">
+          <tr *ngFor="let p of filteredProducts; trackBy: trackById">
+            <td>
+              <img
+                [src]="getImageUrl(p.image)"
+                alt="Product Image"
+                class="product-img"
+                height="20px"
+                ,
+                width="30px"
+              />
+            </td>
             <td>{{ p.name }}</td>
+            <td>{{ p.mainCategoryName }}</td>
             <td>{{ p.categoryName }}</td>
             <td>₹{{ p.price }}</td>
-            <td>{{ p.earnBeans }}</td>
-            <td>{{ p.redeemBeans }}</td>
+            <td>{{ p.earnPercent }}%</td>
+            <td>{{ p.redeemPercent }}%</td>
             <td>
               <span class="badge" [class.yes]="p.isPopular" [class.no]="!p.isPopular">
                 {{ p.isPopular ? 'Yes' : 'No' }}
               </span>
             </td>
             <td>
-              <button class="btn edit" (click)="openEditModal(p)">Edit</button>
-              <button class="btn delete" (click)="confirmDelete(p)">Delete</button>
+              <button type="button" class="btn edit" (click)="handleEditClick(p.id)">Edit</button>
+
+              <button type="button" class="btn delete" (click)="handleDeleteClick(p.id)">
+                Delete
+              </button>
             </td>
           </tr>
         </tbody>
@@ -52,39 +69,32 @@
   </div>
 </div>
 
-<!-- ADD / EDIT MODAL -->
+<!-- ADD MODAL -->
 <div class="modal-overlay" *ngIf="showAddModal">
   <div class="modal-card">
-    <h3>Add Coffee Product</h3>
+    <h3>Add Product</h3>
 
     <input [(ngModel)]="newProduct.name" placeholder="Product Name" />
-    <select class="form-control" [(ngModel)]="newProduct.category">
-      <option value="" disabled selected>Select Category</option>
-      <option *ngFor="let c of categories" [value]="c.id">
-        {{ c.name }}
+
+    <select [(ngModel)]="newProduct.category_id">
+      <option value="">Select Category</option>
+      <option *ngFor="let c of categories" [value]="c.category_id">
+        {{ c.category_name }}
       </option>
     </select>
 
-    <textarea
-      [(ngModel)]="newProduct.description"
-      placeholder="Product Description"
-      rows="3"
-    ></textarea>
+    <textarea [(ngModel)]="newProduct.description" placeholder="Product Description"></textarea>
 
     <input type="number" [(ngModel)]="newProduct.price" placeholder="Price" />
-    <input type="number" [(ngModel)]="newProduct.earnBeans" placeholder="Earn Beans" />
-    <input type="number" [(ngModel)]="newProduct.redeemBeans" placeholder="Redeem Beans" />
 
     <div class="popular-row">
-      <span class="popular-label">Popular Product</span>
-
-      <label class="radio">
-        <input type="radio" name="popular" [value]="1" [(ngModel)]="newProduct.isPopular" />
+      <label>
+        <input type="radio" [value]="1" [(ngModel)]="newProduct.is_popular" name="pop" />
         Yes
       </label>
 
-      <label class="radio">
-        <input type="radio" name="popular" [value]="0" [(ngModel)]="newProduct.isPopular" />
+      <label>
+        <input type="radio" [value]="0" [(ngModel)]="newProduct.is_popular" name="pop" />
         No
       </label>
     </div>
@@ -98,38 +108,30 @@
   </div>
 </div>
 
-<div class="modal-overlay" *ngIf="showEditModal && editProduct">
+<!-- EDIT MODAL -->
+<div class="modal-overlay" *ngIf="showEditModal">
   <div class="modal-card">
-    <h3>Edit Coffee Product</h3>
+    <h3>Edit Product</h3>
 
-    <input [(ngModel)]="editProduct.name" placeholder="Product Name" />
+    <input [(ngModel)]="editProduct.name" />
 
-    <select class="form-control" [(ngModel)]="editProduct.category">
-      <option value="" disabled>Select Category</option>
-      <option *ngFor="let c of categories" [value]="c.id">
-        {{ c.name }}
+    <select [(ngModel)]="editProduct.category_id">
+      <option *ngFor="let c of categories" [ngValue]="c.category_id">
+        {{ c.category_name }}
       </option>
     </select>
+    <textarea [(ngModel)]="editProduct.description"></textarea>
 
-    <textarea
-      [(ngModel)]="editProduct.description"
-      placeholder="Product Description"
-      rows="3"
-    ></textarea>
+    <input type="number" [(ngModel)]="editProduct.price" />
 
-    <input type="number" [(ngModel)]="editProduct.price" placeholder="Price" />
-    <input type="number" [(ngModel)]="editProduct.earnBeans" placeholder="Earn Beans" />
-    <input type="number" [(ngModel)]="editProduct.redeemBeans" placeholder="Redeem Beans" />
     <div class="popular-row">
-      <span class="popular-label">Popular Product</span>
-
-      <label class="radio">
-        <input type="radio" name="popularEdit" [value]="1" [(ngModel)]="editProduct.isPopular" />
+      <label>
+        <input type="radio" [value]="1" [(ngModel)]="editProduct.is_popular" name="popEdit" />
         Yes
       </label>
 
-      <label class="radio">
-        <input type="radio" name="popularEdit" [value]="0" [(ngModel)]="editProduct.isPopular" />
+      <label>
+        <input type="radio" [value]="0" [(ngModel)]="editProduct.is_popular" name="popEdit" />
         No
       </label>
     </div>
@@ -139,20 +141,6 @@
     <div class="modal-footer">
       <button class="btn save" (click)="updateProduct()">Update</button>
       <button class="btn cancel" (click)="closeEditModal()">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- DELETE MODAL -->
-<div class="modal-overlay" *ngIf="showDeleteModal">
-  <div class="modal-card small">
-    <p>
-      Delete <strong>{{ productToDelete.name }}</strong
-      >?
-    </p>
-    <div class="modal-footer">
-      <button class="btn delete" (click)="deleteProduct()">Delete</button>
-      <button class="btn cancel" (click)="cancelDelete()">Cancel</button>
     </div>
   </div>
 </div>

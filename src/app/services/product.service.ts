@@ -3,28 +3,20 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-export interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: string;
-  category: string;        // category ID
-  category_name: string;   // for display
-  earn_beans: number;
-  redeem_beans: number;
-  image: string;
-  is_popular: number;
-}
-
 @Injectable({ providedIn: 'root' })
 export class ProductService {
 
   private http = inject(HttpClient);
   private apiUrl = `${environment.API_BASE_URL}/product`;
 
-  getProducts(): Observable<{ success: boolean; data: Product[] }> {
-    return this.http.get<{ success: boolean; data: Product[] }>(`${this.apiUrl}/admin`);;
+  /* ================= ADMIN ================= */
+
+  getProducts(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/admin`);
   }
+  getProductById(id: number) {
+  return this.http.get<any>(`${this.apiUrl}/${id}`);
+}
 
   addProduct(formData: FormData): Observable<any> {
     return this.http.post(this.apiUrl, formData);
@@ -36,5 +28,15 @@ export class ProductService {
 
   deleteProduct(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  /* ================= USER ================= */
+
+  getUserProducts(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/user`);
+  }
+
+  getPopularProducts(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/popular`);
   }
 }

@@ -1,8 +1,9 @@
-import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, inject,ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
 import { CategoryService } from '../../services/category.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-products',
@@ -12,9 +13,9 @@ import { CategoryService } from '../../services/category.service';
   styleUrls: ['./products.css'],
 })
 export class ProductsComponent implements OnInit {
-  private cdr = inject(ChangeDetectorRef);
   private productService = inject(ProductService);
   private categoryService = inject(CategoryService);
+  private cdr = inject(ChangeDetectorRef);
 
   products: any[] = [];
   filteredProducts: any[] = [];
@@ -28,12 +29,10 @@ export class ProductsComponent implements OnInit {
 
   newProduct: any = {
     name: '',
-    category: '',
+    category_id: '',
     price: null,
-    earnBeans: null,
-    redeemBeans: null,
     image: null,
-    isPopular: false,
+    is_popular: 0,
     description: '',
   };
 
@@ -45,37 +44,70 @@ export class ProductsComponent implements OnInit {
     this.loadProducts();
   }
 
-  /* ================= GET ================= */
-  loadCategories() {
-    this.categoryService.getCategories().subscribe({
-      next: (res) => {
-        console.log('CATEGORY API RESPONSE:', res);
-        this.categories = res; // ✅ DIRECT ARRAY
-      },
-      error: () => {
-        console.error('Failed to load categories');
-      },
-    });
-  }
+  /* ================= LOAD DATA ================= */
+ handleDeleteClick(id: number) {
 
-  loadProducts() {
-    this.productService.getProducts().subscribe((res) => {
-      this.products = res.data.map((p) => ({
-        id: p.id,
-        name: p.name,
-        category: p.category, // ID
-        categoryName: p.category_name, // Display
-        price: p.price,
-        earnBeans: p.earn_beans,
-        redeemBeans: p.redeem_beans,
-        image: p.image,
-        isPopular: p.is_popular == 1, // ✅ IMPORTANT
-        description: p.description,
-      }));
-      this.filteredProducts = [...this.products];
-      this.cdr.detectChanges();
-    });
-  }
+  const confirmDelete = confirm("Are you sure you want to delete this product?");
+
+  if (!confirmDelete) return;
+
+  this.productService.deleteProduct(id).subscribe({
+    next: () => {
+      alert("Product deleted successfully!");
+      this.loadProducts(); // 🔥 refresh table
+      this.cdr.detectChanges();  
+    },
+    error: () => {
+      alert("Delete failed!");
+    }
+  });
+}
+
+
+
+
+  testClick(p: any) {
+  console.log("BUTTON WORKING =>", p);
+}
+loadCategories() {
+  this.categoryService.getCategories().subscribe({
+    next: (res: any) => {
+      console.log('CATEGORY API RESPONSE:', res);
+
+      // 🔥 IMPORTANT FIX
+      this.categories = res.data || res;
+    },
+    error: () => console.error('Failed to load categories'),
+  });
+}
+
+loadProducts() {
+  this.productService.getProducts().subscribe((res: any) => {
+
+    this.products = res.data.map((p: any) => ({
+      id: p.id,
+      name: p.name,
+
+      // 🔥 IMPORTANT FIX
+      category_id: p.category_id || p.category,
+
+      categoryName: p.category_name,
+      mainCategoryName: p.main_category_name,
+      price: p.price,
+      earnPercent: p.earn_beans,
+      redeemPercent: p.redeem_beans,
+      image: p.image,
+      isPopular: p.is_popular == 1,
+      description: p.description,
+    }));
+
+    this.filteredProducts = [...this.products];
+    this.cdr.detectChanges();   // 🔥 FAST LOAD FIX
+  });
+}
+
+
+  /* ================= SEARCH ================= */
 
   applyFilter() {
     this.filteredProducts = this.products.filter((p) =>
@@ -83,7 +115,7 @@ export class ProductsComponent implements OnInit {
     );
   }
 
-  trackByName(_: number, item: any) {
+  trackById(_: number, item: any) {
     return item.id;
   }
 
@@ -92,6 +124,7 @@ export class ProductsComponent implements OnInit {
   onImageChange(event: any, type: 'add' | 'edit') {
     const file = event.target.files[0];
     if (!file) return;
+
     if (type === 'add') this.newProduct.image = file;
     else this.editProduct.image = file;
   }
@@ -106,38 +139,77 @@ export class ProductsComponent implements OnInit {
     this.showAddModal = false;
     this.newProduct = {
       name: '',
-      category: '',
+      category_id: '',
       price: null,
-      earnBeans: null,
-      redeemBeans: null,
       image: null,
-      // isPopular:0
+      is_popular: 0,
+      description: '',
     };
   }
+ getImageUrl(image: string): string {
+  if (!image) {
+    return 'assets/no-image.png';
+  }
 
+  if (image.startsWith('http')) {
+    return image;
+  }
+
+  return `${environment.API_URL}${image}`;
+}
   addProduct() {
     const fd = new FormData();
     fd.append('name', this.newProduct.name);
-    fd.append('category', this.newProduct.category); // ID save
+    fd.append('category_id', this.newProduct.category_id);
     fd.append('price', this.newProduct.price);
-    fd.append('earn_beans', this.newProduct.earnBeans);
-    fd.append('redeem_beans', this.newProduct.redeemBeans);
-    fd.append('is_popular', this.newProduct.isPopular ? '1' : '0'); // ✅
+    fd.append('is_popular', String(this.newProduct.is_popular ?? 0));
     fd.append('description', this.newProduct.description);
-    if (this.newProduct.image) fd.append('image', this.newProduct.image);
+
+    if (this.newProduct.image) {
+      fd.append('image', this.newProduct.image);
+    }
 
     this.productService.addProduct(fd).subscribe(() => {
       this.loadProducts();
       this.closeAddModal();
     });
+    this.cdr.detectChanges();  
   }
 
   /* ================= EDIT ================= */
 
-  openEditModal(product: any) {
-    this.editProduct = { ...product };
+
+  handleEditClick(id: number) {
+    this.productService.getProductById(id).subscribe((res: any) => { 
+      const product = res.data;
+
+    this.editProduct = {
+      id: product.id,
+      name: product.name,
+      category_id: Number(product.category_id), // 🔥 important
+      description: product.description,
+      price: product.price,
+      is_popular: product.is_popular,
+      image: product.image
+    };
+
+    console.log("EDIT PRODUCT LOADED =>", this.editProduct);
+
     this.showEditModal = true;
-  }
+     this.cdr.detectChanges(); 
+  });
+}
+
+openEditModal(product: any) {
+  this.editProduct = {
+    ...product,
+    category_id: Number(product.category_id),
+    is_popular: product.is_popular ?? (product.isPopular ? 1 : 0)
+  };
+
+  this.showEditModal = true;
+}
+
 
   closeEditModal() {
     this.showEditModal = false;
@@ -147,23 +219,15 @@ export class ProductsComponent implements OnInit {
   updateProduct() {
     const fd = new FormData();
     fd.append('name', this.editProduct.name);
-    fd.append('category', this.editProduct.category); // ID
+    fd.append('category_id', this.editProduct.category_id);
     fd.append('price', this.editProduct.price);
-    fd.append('earn_beans', this.editProduct.earnBeans);
-    fd.append('redeem_beans', this.editProduct.redeemBeans);
-   fd.append(
-  'is_popular',
-  String(Number(this.editProduct.isPopular))
-);
+    fd.append('is_popular', String(Number(this.editProduct.isPopular)));
     fd.append('description', this.editProduct.description);
+
     if (this.editProduct.image instanceof File) {
       fd.append('image', this.editProduct.image);
     }
 
-    // ✅ DEBUG PROPERLY
-    fd.forEach((value, key) => {
-      console.log(key, value);
-    });
     this.productService.updateProduct(this.editProduct.id, fd).subscribe(() => {
       this.loadProducts();
       this.closeEditModal();

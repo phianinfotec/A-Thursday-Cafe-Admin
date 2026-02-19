@@ -32,34 +32,50 @@ export class LoginComponent {
     // 🔥 CALL LOGIN API
     this.auth.login(this.loginForm.getRawValue()).subscribe({
       next: (res) => {
-        // Check if response indicates failure
-        if (res.success === false || res.error || !res.token) {
-          // ← Added res.success === false check
-          console.log('Login failed with message:', res.message);
-          this.error = res.message || 'Invalid email or password'; // ← Now displays "Invalid email/password"
+        console.log('LOGIN RESPONSE:', res);
+
+        const token = res.token || res.data?.token;
+
+        if (!token) {
+          this.error = res.message || 'Invalid email or password';
           return;
         }
 
-        console.log('11111111111111111', res.token);
-        console.log('Login successful');
-        // // 🔥 SAVE TOKEN
-        this.auth.saveToken(res.token);
+        console.log('Login successful, token found');
 
-        // // 🔥 CASE 1
-        // if (res.token) {
-        //   this.auth.saveToken(res.token);
-        // }
+        this.auth.saveToken(token);
 
-        // // 🔥 CASE 2 (agar token data ke andar ho)
-        // else if (res.data?.token) {
-        //   this.auth.saveToken(res.data.token);
-        // }
-
-        // 🔥 REDIRECT
-        setTimeout(() => {
-          this.router.navigateByUrl('/dashboard');
-        }, 0);
+        this.router.navigateByUrl('/dashboard');
       },
+
+      // next: (res) => {
+      //   // Check if response indicates failure
+      //   if (res.success === false || res.error || !res.token) {
+      //     // ← Added res.success === false check
+      //     console.log('Login failed with message:', res.message);
+      //     this.error = res.message || 'Invalid email or password'; // ← Now displays "Invalid email/password"
+      //     return;
+      //   }
+
+      //   console.log('Login successful');
+      //   // // 🔥 SAVE TOKEN
+      //   this.auth.saveToken(res.token);
+
+      //   // // 🔥 CASE 1
+      //   // if (res.token) {
+      //   //   this.auth.saveToken(res.token);
+      //   // }
+
+      //   // // 🔥 CASE 2 (agar token data ke andar ho)
+      //   // else if (res.data?.token) {
+      //   //   this.auth.saveToken(res.data.token);
+      //   // }
+
+      //   // 🔥 REDIRECT
+      //   setTimeout(() => {
+      //     this.router.navigateByUrl('/dashboard');
+      //   }, 0);
+      // },
       error: (err) => {
         // Handle different error response formats
         if (err.error && err.error.errors && err.error.errors.length > 0) {
