@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 
 import { CategoryService } from '../../services/category.service';
 import { MainCategoryService } from '../../services/main-category.service';
@@ -18,51 +19,53 @@ export class CategoryComponent implements OnInit {
   private mainCategoryService = inject(MainCategoryService);
   private cdr = inject(ChangeDetectorRef);
 
-  // 🔹 DATA
+  /* ================= DATA ================= */
+
   categories: any[] = [];
   filteredCategories: any[] = [];
   paginatedCategories: any[] = [];
   mainCategories: any[] = [];
 
-  // 🔹 SEARCH + PAGINATION
   searchText = '';
   pageSize = 10;
   currentPage = 1;
   totalPages = 0;
 
-  // 🔹 MODALS
+  isLoading = true;
+
+  sortColumn: string = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
+
+  /* ================= MODALS ================= */
+
   showAdd = false;
   showEdit = false;
   showView = false;
   showDelete = false;
 
-  // 🔹 HOLDERS
   newCategory: any = {};
   editCategory: any = null;
   viewCategory: any = null;
   deleteCategory: any = null;
 
   ngOnInit(): void {
-    this.loadMainCategories();
-    this.loadCategories();
+    this.loadAllData();
   }
 
   /* ================= LOAD ================= */
 
-  loadMainCategories() {
-    this.mainCategoryService.getAll().subscribe({
-      next: (res) => {
-        this.mainCategories = res?.data || [];
-        this.cdr.detectChanges();
-      },
-    });
-  }
+  loadAllData() {
+    this.isLoading = true;
 
-  loadCategories() {
-    this.categoryService.getCategories().subscribe({
-      next: (data) => {
-        // ✅ map once (clean + fast)
-        this.categories = (data || []).map((c: any) => ({
+    forkJoin({
+      main: this.mainCategoryService.getAll(),
+      cat: this.categoryService.getCategories()
+    }).subscribe({
+      next: (res: any) => {
+
+        this.mainCategories = res.main?.data || [];
+
+        this.categories = (res.cat || []).map((c: any) => ({
           category_id: c.category_id,
           category_name: c.category_name,
           main_category_id: c.main_category_id,
@@ -70,33 +73,77 @@ export class CategoryComponent implements OnInit {
         }));
 
         this.applyFilter();
+        this.isLoading = false;
         this.cdr.detectChanges();
       },
+      error: () => this.isLoading = false
     });
   }
 
-  /* ================= SEARCH + PAGINATION ================= */
+  /* ================= FILTER ================= */
 
   applyFilter() {
     const term = this.searchText.toLowerCase();
 
     this.filteredCategories = term
       ? this.categories.filter(c =>
-          c.category_name.toLowerCase().includes(term)
+          c.category_name.toLowerCase().includes(term) ||
+          c.main_category_name.toLowerCase().includes(term)
         )
       : [...this.categories];
 
+    this.sortData();
     this.totalPages = Math.ceil(this.filteredCategories.length / this.pageSize);
     this.currentPage = 1;
     this.updatePagination();
   }
 
+  /* ================= SORT ================= */
+
+sortBy(column: string) {
+
+  if (this.sortColumn === column) {
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    this.sortColumn = column;
+    this.sortDirection = 'asc';
+  }
+
+  this.filteredCategories.sort((a, b) => {
+
+    let valueA = a[column];
+    let valueB = b[column];
+
+    // null / undefined safe check
+    valueA = valueA ? valueA.toString().toLowerCase() : '';
+    valueB = valueB ? valueB.toString().toLowerCase() : '';
+
+    if (valueA < valueB) return this.sortDirection === 'asc' ? -1 : 1;
+    if (valueA > valueB) return this.sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  this.updatePagination();
+}
+
+  sortData() {
+    if (!this.sortColumn) return;
+
+    this.filteredCategories.sort((a, b) => {
+      const valA = a[this.sortColumn]?.toLowerCase();
+      const valB = b[this.sortColumn]?.toLowerCase();
+
+      if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
+
+  /* ================= PAGINATION ================= */
+
   updatePagination() {
     const start = (this.currentPage - 1) * this.pageSize;
-    this.paginatedCategories = this.filteredCategories.slice(
-      start,
-      start + this.pageSize
-    );
+    this.paginatedCategories = this.filteredCategories.slice(start, start + this.pageSize);
   }
 
   changePage(p: number) {
@@ -105,11 +152,7 @@ export class CategoryComponent implements OnInit {
     this.updatePagination();
   }
 
-  trackById(_: number, item: any) {
-    return item.category_id;
-  }
-
-  /* ================= OPEN MODALS ================= */
+  /* ================= MODAL OPEN ================= */
 
   openAdd() {
     this.closeAll();
@@ -135,26 +178,26 @@ export class CategoryComponent implements OnInit {
     this.showDelete = true;
   }
 
-  /* ================= CREATE ================= */
+  /* ================= ADD ================= */
 
   addCategory() {
     if (!this.newCategory.name || !this.newCategory.main_category_id) return;
 
     const payload = {
       name: this.newCategory.name,
-      main_category_id: this.newCategory.main_category_id,
+      main_category_id: this.newCategory.main_category_id
     };
 
-    this.categoryService.addCategory(payload).subscribe(() => {
-      // ✅ local add (NO reload)
+    this.categoryService.addCategory(payload).subscribe((res: any) => {
+
+      const mainName =
+        this.mainCategories.find(m => m.id == payload.main_category_id)?.name || '';
+
       this.categories.unshift({
-        category_id: Date.now(), // temp
+        category_id: res?.id || Date.now(),
         category_name: payload.name,
         main_category_id: payload.main_category_id,
-        main_category_name:
-          this.mainCategories.find(
-            m => m.id === payload.main_category_id
-          )?.name || '',
+        main_category_name: mainName
       });
 
       this.applyFilter();
@@ -166,27 +209,30 @@ export class CategoryComponent implements OnInit {
   /* ================= UPDATE ================= */
 
   updateCategory() {
+    if (!this.editCategory) return;
+
     const payload = {
       name: this.editCategory.category_name,
-      main_category_id: this.editCategory.main_category_id,
+      main_category_id: this.editCategory.main_category_id
     };
 
     this.categoryService
       .updateCategory(this.editCategory.category_id, payload)
       .subscribe(() => {
-        // ✅ local update
-        const i = this.categories.findIndex(
+
+        const index = this.categories.findIndex(
           c => c.category_id === this.editCategory.category_id
         );
 
-        if (i > -1) {
-          this.categories[i] = {
-            ...this.categories[i],
-            ...payload,
-            main_category_name:
-              this.mainCategories.find(
-                m => m.id === payload.main_category_id
-              )?.name || '',
+        if (index > -1) {
+          const mainName =
+            this.mainCategories.find(m => m.id == payload.main_category_id)?.name || '';
+
+          this.categories[index] = {
+            ...this.categories[index],
+            category_name: payload.name,
+            main_category_id: payload.main_category_id,
+            main_category_name: mainName
           };
         }
 
@@ -199,10 +245,12 @@ export class CategoryComponent implements OnInit {
   /* ================= DELETE ================= */
 
   deleteCat() {
+    if (!this.deleteCategory) return;
+
     this.categoryService
       .deleteCategory(this.deleteCategory.category_id)
       .subscribe(() => {
-        // ✅ local delete
+
         this.categories = this.categories.filter(
           c => c.category_id !== this.deleteCategory.category_id
         );

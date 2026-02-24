@@ -1,6 +1,23 @@
-import { Component, OnInit, inject,ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  ViewChild,
+  inject,
+  ChangeDetectorRef
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
+import { MatTableDataSource } from '@angular/material/table';
+
 import { ProductService } from '../../services/product.service';
 import { CategoryService } from '../../services/category.service';
 import { environment } from '../../../environments/environment';
@@ -8,20 +25,40 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatInputModule,
+    MatFormFieldModule
+  ],
   templateUrl: './products.html',
   styleUrls: ['./products.css'],
 })
-export class ProductsComponent implements OnInit {
+export class ProductsComponent implements OnInit, AfterViewInit {
+
   private productService = inject(ProductService);
   private categoryService = inject(CategoryService);
   private cdr = inject(ChangeDetectorRef);
 
   products: any[] = [];
-  filteredProducts: any[] = [];
   categories: any[] = [];
 
-  searchText = '';
+  displayedColumns: string[] = [
+    'image',
+    'name',
+    'mainCategoryName',
+    'categoryName',
+    'price',
+    'earnPercent',
+    'redeemPercent',
+    'isPopular',
+    'action'
+  ];
+
+  dataSource = new MatTableDataSource<any>([]);
 
   showAddModal = false;
   showEditModal = false;
@@ -39,84 +76,60 @@ export class ProductsComponent implements OnInit {
   editProduct: any = null;
   productToDelete: any = null;
 
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
   ngOnInit(): void {
     this.loadCategories();
     this.loadProducts();
   }
 
-  /* ================= LOAD DATA ================= */
- handleDeleteClick(id: number) {
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
 
-  const confirmDelete = confirm("Are you sure you want to delete this product?");
+  /* ================= LOAD ================= */
 
-  if (!confirmDelete) return;
-
-  this.productService.deleteProduct(id).subscribe({
-    next: () => {
-      alert("Product deleted successfully!");
-      this.loadProducts(); // 🔥 refresh table
-      this.cdr.detectChanges();  
-    },
-    error: () => {
-      alert("Delete failed!");
-    }
-  });
-}
-
-
-
-
-  testClick(p: any) {
-  console.log("BUTTON WORKING =>", p);
-}
-loadCategories() {
-  this.categoryService.getCategories().subscribe({
-    next: (res: any) => {
-      console.log('CATEGORY API RESPONSE:', res);
-
-      // 🔥 IMPORTANT FIX
+  loadCategories() {
+    this.categoryService.getCategories().subscribe((res: any) => {
       this.categories = res.data || res;
-    },
-    error: () => console.error('Failed to load categories'),
-  });
-}
+    });
+  }
 
-loadProducts() {
-  this.productService.getProducts().subscribe((res: any) => {
+  loadProducts() {
+    this.productService.getProducts().subscribe((res: any) => {
 
-    this.products = res.data.map((p: any) => ({
-      id: p.id,
-      name: p.name,
+      this.products = res.data.map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        category_id: p.category_id,
+        categoryName: p.category_name,
+        mainCategoryName: p.main_category_name,
+        price: p.price,
+        earnPercent: p.earn_beans,
+        redeemPercent: p.redeem_beans,
+        image: p.image,
+        isPopular: p.is_popular == 1 ? 'Yes' : 'No',
+        description: p.description
+      }));
 
-      // 🔥 IMPORTANT FIX
-      category_id: p.category_id || p.category,
-
-      categoryName: p.category_name,
-      mainCategoryName: p.main_category_name,
-      price: p.price,
-      earnPercent: p.earn_beans,
-      redeemPercent: p.redeem_beans,
-      image: p.image,
-      isPopular: p.is_popular == 1,
-      description: p.description,
-    }));
-
-    this.filteredProducts = [...this.products];
-    this.cdr.detectChanges();   // 🔥 FAST LOAD FIX
-  });
-}
-
+      this.dataSource.data = this.products;
+      this.cdr.detectChanges();
+    });
+  }
 
   /* ================= SEARCH ================= */
 
-  applyFilter() {
-    this.filteredProducts = this.products.filter((p) =>
-      p.name.toLowerCase().includes(this.searchText.toLowerCase()),
-    );
-  }
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
 
-  trackById(_: number, item: any) {
-    return item.id;
+    this.dataSource.filterPredicate = (data: any, filter: string) =>
+      Object.values(data).some(val =>
+        val?.toString().toLowerCase().includes(filter)
+      );
+
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
   /* ================= IMAGE ================= */
@@ -127,6 +140,12 @@ loadProducts() {
 
     if (type === 'add') this.newProduct.image = file;
     else this.editProduct.image = file;
+  }
+
+  getImageUrl(image: string): string {
+    if (!image) return 'assets/no-image.png';
+    if (image.startsWith('http')) return image;
+    return `${environment.API_URL}${image}`;
   }
 
   /* ================= ADD ================= */
@@ -146,17 +165,7 @@ loadProducts() {
       description: '',
     };
   }
- getImageUrl(image: string): string {
-  if (!image) {
-    return 'assets/no-image.png';
-  }
 
-  if (image.startsWith('http')) {
-    return image;
-  }
-
-  return `${environment.API_URL}${image}`;
-}
   addProduct() {
     const fd = new FormData();
     fd.append('name', this.newProduct.name);
@@ -173,43 +182,29 @@ loadProducts() {
       this.loadProducts();
       this.closeAddModal();
     });
-    this.cdr.detectChanges();  
   }
 
   /* ================= EDIT ================= */
 
-
   handleEditClick(id: number) {
-    this.productService.getProductById(id).subscribe((res: any) => { 
+    this.productService.getProductById(id).subscribe((res: any) => {
+
       const product = res.data;
 
-    this.editProduct = {
-      id: product.id,
-      name: product.name,
-      category_id: Number(product.category_id), // 🔥 important
-      description: product.description,
-      price: product.price,
-      is_popular: product.is_popular,
-      image: product.image
-    };
+      this.editProduct = {
+        id: product.id,
+        name: product.name,
+        category_id: Number(product.category_id),
+        description: product.description,
+        price: product.price,
+        is_popular: product.is_popular,
+        image: product.image
+      };
 
-    console.log("EDIT PRODUCT LOADED =>", this.editProduct);
-
-    this.showEditModal = true;
-     this.cdr.detectChanges(); 
-  });
-}
-
-openEditModal(product: any) {
-  this.editProduct = {
-    ...product,
-    category_id: Number(product.category_id),
-    is_popular: product.is_popular ?? (product.isPopular ? 1 : 0)
-  };
-
-  this.showEditModal = true;
-}
-
+      this.showEditModal = true;
+      this.cdr.detectChanges();
+    });
+  }
 
   closeEditModal() {
     this.showEditModal = false;
@@ -221,35 +216,37 @@ openEditModal(product: any) {
     fd.append('name', this.editProduct.name);
     fd.append('category_id', this.editProduct.category_id);
     fd.append('price', this.editProduct.price);
-    fd.append('is_popular', String(Number(this.editProduct.isPopular)));
+    fd.append('is_popular', String(this.editProduct.is_popular ?? 0));
     fd.append('description', this.editProduct.description);
 
     if (this.editProduct.image instanceof File) {
       fd.append('image', this.editProduct.image);
     }
 
-    this.productService.updateProduct(this.editProduct.id, fd).subscribe(() => {
-      this.loadProducts();
-      this.closeEditModal();
-    });
+    this.productService.updateProduct(this.editProduct.id, fd)
+      .subscribe(() => {
+        this.loadProducts();
+        this.closeEditModal();
+      });
   }
 
   /* ================= DELETE ================= */
 
-  confirmDelete(product: any) {
+  openDeleteModal(product: any) {
     this.productToDelete = product;
     this.showDeleteModal = true;
   }
 
-  cancelDelete() {
+  closeDeleteModal() {
     this.showDeleteModal = false;
     this.productToDelete = null;
   }
 
   deleteProduct() {
-    this.productService.deleteProduct(this.productToDelete.id).subscribe(() => {
-      this.loadProducts();
-      this.cancelDelete();
-    });
+    this.productService.deleteProduct(this.productToDelete.id)
+      .subscribe(() => {
+        this.loadProducts();
+        this.closeDeleteModal();
+      });
   }
 }

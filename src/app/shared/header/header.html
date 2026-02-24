@@ -15,6 +15,29 @@
       <a routerLink="/products">Products</a>
       <a routerLink="/category">Category</a>
       <a routerLink="/main-category">Main Category</a>
+         <!-- 🔔 Notification Bell -->
+      <div class="notification-wrapper">
+
+        <div class="bell" (click)="toggleNotification()">
+          🔔
+          <span class="badge" *ngIf="unreadCount > 0">
+            {{ unreadCount }}
+          </span>
+        </div>
+
+        <div class="dropdown" *ngIf="showDropdown">
+          <div *ngIf="notifications.length === 0" class="item">
+            No notifications
+          </div>
+
+          <div *ngFor="let n of notifications" class="item">
+            <strong>{{ n.title }}</strong>
+            <p>{{ n.message }}</p>
+            <small>{{ n.created_at | date:'short' }}</small>
+          </div>
+        </div>
+
+      </div>
       <button class="logout-btn" (click)="logout()">Logout</button>
     </nav>
 

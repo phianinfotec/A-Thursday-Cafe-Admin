@@ -1,77 +1,112 @@
 <div class="products-container">
   <div class="products-card">
+
     <!-- TOP BAR -->
     <div class="products-top-bar">
-      <h2>Products</h2>
+      <div>
+        <h2>☕ Products</h2>
+      </div>
 
-      <input
-        class="search-box"
-        placeholder="Search product..."
-        [(ngModel)]="searchText"
-        (input)="applyFilter()"
-      />
+      <div class="actions-section">
 
-      <button class="btn add" (click)="openAddModal()">+ Add Product</button>
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search</mat-label>
+          <input matInput (keyup)="applyFilter($event)">
+        </mat-form-field>
+
+        <button class="btn add" (click)="openAddModal()">
+          + Add Product
+        </button>
+
+      </div>
     </div>
 
     <!-- TABLE -->
     <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>Image</th>
 
-            <th>Name</th>
-            <th>Main Category</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Earn %</th>
-            <th>Redeem %</th>
-            <th>Popular</th>
-            <th>Action</th>
-          </tr>
-        </thead>
+      <table mat-table [dataSource]="dataSource" matSort>
 
-        <tbody>
-          <tr *ngFor="let p of filteredProducts; trackBy: trackById">
-            <td>
-              <img
-                [src]="getImageUrl(p.image)"
-                alt="Product Image"
-                class="product-img"
-                height="20px"
-                ,
-                width="30px"
-              />
-            </td>
-            <td>{{ p.name }}</td>
-            <td>{{ p.mainCategoryName }}</td>
-            <td>{{ p.categoryName }}</td>
-            <td>₹{{ p.price }}</td>
-            <td>{{ p.earnPercent }}%</td>
-            <td>{{ p.redeemPercent }}%</td>
-            <td>
-              <span class="badge" [class.yes]="p.isPopular" [class.no]="!p.isPopular">
-                {{ p.isPopular ? 'Yes' : 'No' }}
-              </span>
-            </td>
-            <td>
-              <button type="button" class="btn edit" (click)="handleEditClick(p.id)">Edit</button>
+        <!-- IMAGE -->
+        <ng-container matColumnDef="image">
+          <th mat-header-cell *matHeaderCellDef>Image</th>
+          <td mat-cell *matCellDef="let p">
+            <img [src]="getImageUrl(p.image)" class="product-img">
+          </td>
+        </ng-container>
 
-              <button type="button" class="btn delete" (click)="handleDeleteClick(p.id)">
-                Delete
-              </button>
-            </td>
-          </tr>
-        </tbody>
+        <!-- NAME -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+          <td mat-cell *matCellDef="let p">{{p.name}}</td>
+        </ng-container>
+
+        <!-- MAIN CATEGORY -->
+        <ng-container matColumnDef="mainCategoryName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Main Category</th>
+          <td mat-cell *matCellDef="let p">{{p.mainCategoryName}}</td>
+        </ng-container>
+
+        <!-- CATEGORY -->
+        <ng-container matColumnDef="categoryName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th>
+          <td mat-cell *matCellDef="let p">{{p.categoryName}}</td>
+        </ng-container>
+
+        <!-- PRICE -->
+        <ng-container matColumnDef="price">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
+          <td mat-cell *matCellDef="let p">₹{{p.price}}</td>
+        </ng-container>
+
+        <!-- EARN -->
+        <ng-container matColumnDef="earnPercent">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Earn %</th>
+          <td mat-cell *matCellDef="let p">{{p.earnPercent}}%</td>
+        </ng-container>
+
+        <!-- REDEEM -->
+        <ng-container matColumnDef="redeemPercent">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Redeem %</th>
+          <td mat-cell *matCellDef="let p">{{p.redeemPercent}}%</td>
+        </ng-container>
+
+        <!-- POPULAR -->
+        <ng-container matColumnDef="isPopular">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Popular</th>
+          <td mat-cell *matCellDef="let p">
+            <span class="badge" [class.popular]="p.isPopular === 'Yes'">
+              {{p.isPopular}}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- ACTION -->
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef>Action</th>
+          <td mat-cell *matCellDef="let p">
+            <button class="btn edit" (click)="handleEditClick(p.id)">Edit</button>
+            <button class="btn delete" (click)="openDeleteModal(p)">Delete</button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
       </table>
+
+      <mat-paginator [pageSize]="5"
+                     [pageSizeOptions]="[5,10,20]">
+      </mat-paginator>
+
     </div>
   </div>
 </div>
 
-<!-- ADD MODAL -->
+<!-- ================= ADD MODAL ================= -->
+
 <div class="modal-overlay" *ngIf="showAddModal">
   <div class="modal-card">
+
     <h3>Add Product</h3>
 
     <input [(ngModel)]="newProduct.name" placeholder="Product Name" />
@@ -83,64 +118,101 @@
       </option>
     </select>
 
-    <textarea [(ngModel)]="newProduct.description" placeholder="Product Description"></textarea>
+    <textarea [(ngModel)]="newProduct.description"
+              placeholder="Description"></textarea>
 
-    <input type="number" [(ngModel)]="newProduct.price" placeholder="Price" />
+    <input type="number"
+           [(ngModel)]="newProduct.price"
+           placeholder="Price" />
 
     <div class="popular-row">
       <label>
-        <input type="radio" [value]="1" [(ngModel)]="newProduct.is_popular" name="pop" />
+        <input type="radio"
+               [value]="1"
+               [(ngModel)]="newProduct.is_popular"
+               name="pop" />
         Yes
       </label>
 
       <label>
-        <input type="radio" [value]="0" [(ngModel)]="newProduct.is_popular" name="pop" />
+        <input type="radio"
+               [value]="0"
+               [(ngModel)]="newProduct.is_popular"
+               name="pop" />
         No
       </label>
     </div>
 
-    <input type="file" (change)="onImageChange($event, 'add')" />
+    <input type="file"
+           (change)="onImageChange($event, 'add')" />
 
     <div class="modal-footer">
       <button class="btn save" (click)="addProduct()">Save</button>
       <button class="btn cancel" (click)="closeAddModal()">Cancel</button>
     </div>
+
   </div>
 </div>
 
-<!-- EDIT MODAL -->
+<!-- ================= EDIT MODAL ================= -->
+
 <div class="modal-overlay" *ngIf="showEditModal">
   <div class="modal-card">
+
     <h3>Edit Product</h3>
 
     <input [(ngModel)]="editProduct.name" />
 
     <select [(ngModel)]="editProduct.category_id">
-      <option *ngFor="let c of categories" [ngValue]="c.category_id">
+      <option *ngFor="let c of categories" [value]="c.category_id">
         {{ c.category_name }}
       </option>
     </select>
+
     <textarea [(ngModel)]="editProduct.description"></textarea>
 
-    <input type="number" [(ngModel)]="editProduct.price" />
+    <input type="number"
+           [(ngModel)]="editProduct.price" />
 
     <div class="popular-row">
       <label>
-        <input type="radio" [value]="1" [(ngModel)]="editProduct.is_popular" name="popEdit" />
+        <input type="radio"
+               [value]="1"
+               [(ngModel)]="editProduct.is_popular"
+               name="popEdit" />
         Yes
       </label>
 
       <label>
-        <input type="radio" [value]="0" [(ngModel)]="editProduct.is_popular" name="popEdit" />
+        <input type="radio"
+               [value]="0"
+               [(ngModel)]="editProduct.is_popular"
+               name="popEdit" />
         No
       </label>
     </div>
 
-    <input type="file" (change)="onImageChange($event, 'edit')" />
+    <input type="file"
+           (change)="onImageChange($event, 'edit')" />
 
     <div class="modal-footer">
       <button class="btn save" (click)="updateProduct()">Update</button>
       <button class="btn cancel" (click)="closeEditModal()">Cancel</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= DELETE MODAL ================= -->
+
+<div class="modal-overlay" *ngIf="showDeleteModal">
+  <div class="modal-card small">
+    <h3>Delete Product</h3>
+    <p>Delete <b>{{productToDelete?.name}}</b>?</p>
+
+    <div class="modal-footer">
+      <button class="btn delete" (click)="deleteProduct()">Delete</button>
+      <button class="btn cancel" (click)="closeDeleteModal()">Cancel</button>
     </div>
   </div>
 </div>

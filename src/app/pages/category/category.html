@@ -1,6 +1,5 @@
 <div class="category-container">
   <div class="category-card">
-
     <!-- TOP BAR -->
     <div class="category-top-bar">
       <h2>Product Categories</h2>
@@ -16,22 +15,43 @@
       <button class="btn add" (click)="openAdd()">+ Add Category</button>
     </div>
 
+    <!-- SKELETON -->
+    <div *ngIf="isLoading" class="skeleton-wrapper">
+      <div class="skeleton-row" *ngFor="let i of [1, 2, 3, 4, 5]">
+        <div class="skeleton-cell"></div>
+        <div class="skeleton-cell"></div>
+        <div class="skeleton-cell"></div>
+      </div>
+    </div>
+
     <!-- TABLE -->
-    <div class="table-wrapper">
+    <div class="table-wrapper" *ngIf="!isLoading">
       <table>
         <thead>
           <tr>
-            <th>Category</th>
-            <th>Main Category</th>
+            <th (click)="sortBy('category_name')">
+              Category
+              <span *ngIf="sortColumn === 'category_name'">
+                {{ sortDirection === 'asc' ? '▲' : '▼' }}
+              </span>
+            </th>
+
+            <th (click)="sortBy('main_category_name')">
+              Main Category
+              <span *ngIf="sortColumn === 'main_category_name'">
+                {{ sortDirection === 'asc' ? '▲' : '▼' }}
+              </span>
+            </th>
+
             <th>Action</th>
           </tr>
         </thead>
 
         <tbody>
-          <tr *ngFor="let cat of paginatedCategories; let i = index">
+          <tr *ngFor="let cat of paginatedCategories">
             <td>{{ cat.category_name }}</td>
             <td>{{ cat.main_category_name }}</td>
-            <td>
+            <td class="action-cell">
               <button class="btn view" (click)="openView(cat)">View</button>
               <button class="btn edit" (click)="openEdit(cat)">Edit</button>
               <button class="btn delete" (click)="openDelete(cat)">Delete</button>
@@ -39,18 +59,18 @@
           </tr>
 
           <tr *ngIf="paginatedCategories.length === 0">
-            <td colspan="6" class="no-data">No categories found</td>
+            <td colspan="3" class="no-data">No categories found</td>
           </tr>
         </tbody>
       </table>
     </div>
 
     <!-- PAGINATION -->
-    <div class="pagination" *ngIf="totalPages > 1">
-      <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
-        Prev
-      </button>
+    <div class="pagination" *ngIf="!isLoading && totalPages > 1">
+      <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">Prev</button>
+
       <span>Page {{ currentPage }} of {{ totalPages }}</span>
+
       <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
         Next
       </button>
@@ -58,7 +78,8 @@
   </div>
 </div>
 
-<!-- ADD MODAL -->
+<!-- ================= ADD MODAL ================= -->
+
 <div class="modal-overlay" *ngIf="showAdd" (click)="closeAll()">
   <div class="modal-card" (click)="$event.stopPropagation()">
     <h3>Add Category</h3>
@@ -79,7 +100,8 @@
   </div>
 </div>
 
-<!-- EDIT MODAL -->
+<!-- ================= EDIT MODAL ================= -->
+
 <div class="modal-overlay" *ngIf="showEdit" (click)="closeAll()">
   <div class="modal-card" (click)="$event.stopPropagation()">
     <h3>Edit Category</h3>
@@ -99,13 +121,14 @@
   </div>
 </div>
 
-<!-- VIEW MODAL -->
+<!-- ================= VIEW MODAL ================= -->
+
 <div class="modal-overlay" *ngIf="showView" (click)="closeAll()">
   <div class="modal-card" (click)="$event.stopPropagation()">
     <h3>Category Details</h3>
 
-    <p><b>Category:</b> {{ viewCategory.category_name }}</p>
-    <p><b>Main Category:</b> {{ viewCategory.main_category_name }}</p>
+    <p><b>Category:</b> {{ viewCategory?.category_name }}</p>
+    <p><b>Main Category:</b> {{ viewCategory?.main_category_name }}</p>
 
     <div class="modal-footer">
       <button class="btn cancel" (click)="closeAll()">Close</button>
@@ -113,10 +136,13 @@
   </div>
 </div>
 
-<!-- DELETE MODAL -->
+<!-- ================= DELETE MODAL ================= -->
+
 <div class="modal-overlay" *ngIf="showDelete" (click)="closeAll()">
   <div class="modal-card small" (click)="$event.stopPropagation()">
-    <p>Delete <b>{{ deleteCategory.category_name }}</b>?</p>
+    <p>
+      Delete <b>{{ deleteCategory?.category_name }}</b> ?
+    </p>
 
     <div class="modal-footer">
       <button class="btn delete" (click)="deleteCat()">Delete</button>
