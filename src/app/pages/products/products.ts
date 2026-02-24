@@ -4,7 +4,7 @@ import {
   AfterViewInit,
   ViewChild,
   inject,
-  ChangeDetectorRef
+  ChangeDetectorRef,
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
@@ -32,13 +32,12 @@ import { environment } from '../../../environments/environment';
     MatPaginatorModule,
     MatSortModule,
     MatInputModule,
-    MatFormFieldModule
+    MatFormFieldModule,
   ],
   templateUrl: './products.html',
   styleUrls: ['./products.css'],
 })
 export class ProductsComponent implements OnInit, AfterViewInit {
-
   private productService = inject(ProductService);
   private categoryService = inject(CategoryService);
   private cdr = inject(ChangeDetectorRef);
@@ -52,10 +51,11 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     'mainCategoryName',
     'categoryName',
     'price',
+    'foodType',
     'earnPercent',
     'redeemPercent',
     'isPopular',
-    'action'
+    'action',
   ];
 
   dataSource = new MatTableDataSource<any>([]);
@@ -71,6 +71,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     image: null,
     is_popular: 0,
     description: '',
+    food_type: 'veg', // ✅ add this
   };
 
   editProduct: any = null;
@@ -99,7 +100,6 @@ export class ProductsComponent implements OnInit, AfterViewInit {
 
   loadProducts() {
     this.productService.getProducts().subscribe((res: any) => {
-
       this.products = res.data.map((p: any) => ({
         id: p.id,
         name: p.name,
@@ -111,7 +111,8 @@ export class ProductsComponent implements OnInit, AfterViewInit {
         redeemPercent: p.redeem_beans,
         image: p.image,
         isPopular: p.is_popular == 1 ? 'Yes' : 'No',
-        description: p.description
+        foodType: p.food_type === 'veg' ? 'Veg' : 'Non-Veg', // ✅
+        description: p.description,
       }));
 
       this.dataSource.data = this.products;
@@ -125,9 +126,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     const filterValue = (event.target as HTMLInputElement).value;
 
     this.dataSource.filterPredicate = (data: any, filter: string) =>
-      Object.values(data).some(val =>
-        val?.toString().toLowerCase().includes(filter)
-      );
+      Object.values(data).some((val) => val?.toString().toLowerCase().includes(filter));
 
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
@@ -163,6 +162,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
       image: null,
       is_popular: 0,
       description: '',
+      food_type: 'veg', // ✅ add this
     };
   }
 
@@ -173,6 +173,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     fd.append('price', this.newProduct.price);
     fd.append('is_popular', String(this.newProduct.is_popular ?? 0));
     fd.append('description', this.newProduct.description);
+    fd.append('food_type', this.newProduct.food_type);
 
     if (this.newProduct.image) {
       fd.append('image', this.newProduct.image);
@@ -188,7 +189,6 @@ export class ProductsComponent implements OnInit, AfterViewInit {
 
   handleEditClick(id: number) {
     this.productService.getProductById(id).subscribe((res: any) => {
-
       const product = res.data;
 
       this.editProduct = {
@@ -198,7 +198,8 @@ export class ProductsComponent implements OnInit, AfterViewInit {
         description: product.description,
         price: product.price,
         is_popular: product.is_popular,
-        image: product.image
+        image: product.image,
+        food_type: product.food_type, // ✅ add this
       };
 
       this.showEditModal = true;
@@ -218,16 +219,16 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     fd.append('price', this.editProduct.price);
     fd.append('is_popular', String(this.editProduct.is_popular ?? 0));
     fd.append('description', this.editProduct.description);
+    fd.append('food_type', this.editProduct.food_type);
 
     if (this.editProduct.image instanceof File) {
       fd.append('image', this.editProduct.image);
     }
 
-    this.productService.updateProduct(this.editProduct.id, fd)
-      .subscribe(() => {
-        this.loadProducts();
-        this.closeEditModal();
-      });
+    this.productService.updateProduct(this.editProduct.id, fd).subscribe(() => {
+      this.loadProducts();
+      this.closeEditModal();
+    });
   }
 
   /* ================= DELETE ================= */
@@ -243,10 +244,9 @@ export class ProductsComponent implements OnInit, AfterViewInit {
   }
 
   deleteProduct() {
-    this.productService.deleteProduct(this.productToDelete.id)
-      .subscribe(() => {
-        this.loadProducts();
-        this.closeDeleteModal();
-      });
+    this.productService.deleteProduct(this.productToDelete.id).subscribe(() => {
+      this.loadProducts();
+      this.closeDeleteModal();
+    });
   }
 }
