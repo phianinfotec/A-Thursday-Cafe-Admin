@@ -1,6 +1,5 @@
 <div class="products-container">
   <div class="products-card">
-
     <!-- TOP BAR -->
     <div class="products-top-bar">
       <div>
@@ -18,7 +17,6 @@
     <!-- TABLE -->
     <div class="table-wrapper">
       <table mat-table [dataSource]="dataSource" matSort>
-
         <!-- USER -->
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>User</th>
@@ -37,16 +35,14 @@
         <!-- MESSAGE -->
         <ng-container matColumnDef="message">
           <th mat-header-cell *matHeaderCellDef>Message</th>
-          <td mat-cell *matCellDef="let f">
-            {{ f.message | slice:0:80 }}...
-          </td>
+          <td mat-cell *matCellDef="let f">{{ f.message | slice: 0 : 30 }}...</td>
         </ng-container>
 
         <!-- DATE -->
         <ng-container matColumnDef="created_at">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
           <td mat-cell *matCellDef="let f">
-            {{ f.created_at | date:'medium' }}
+            {{ f.created_at | date: 'medium' }}
           </td>
         </ng-container>
 
@@ -54,9 +50,11 @@
         <ng-container matColumnDef="status">
           <th mat-header-cell *matHeaderCellDef>Status</th>
           <td mat-cell *matCellDef="let f">
-            <span class="badge"
+            <span
+              class="badge"
               [class.approved]="f.is_approved == 1"
-              [class.pending]="f.is_approved == 0">
+              [class.pending]="f.is_approved == 0"
+            >
               {{ f.is_approved == 1 ? 'Approved' : 'Pending' }}
             </span>
           </td>
@@ -66,30 +64,50 @@
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef>Action</th>
           <td mat-cell *matCellDef="let f">
+            <button class="btn view" (click)="openViewModal(f)">View</button>
 
-            <button *ngIf="f.is_approved == 0"
-              class="btn edit"
-              (click)="approveFeedback(f.id)">
+            <button *ngIf="f.is_approved == 0" class="btn edit" (click)="approveFeedback(f.id)">
               Approve
             </button>
 
-            <button class="btn delete"
-              (click)="removeFeedback(f.id)">
-              Remove
-            </button>
-
+            <button class="btn delete" (click)="removeFeedback(f.id)">Remove</button>
           </td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-
       </table>
 
-      <mat-paginator [pageSize]="5"
-        [pageSizeOptions]="[5,10,20]">
-      </mat-paginator>
-
+      <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 20]"> </mat-paginator>
     </div>
+  </div>
+</div>
+<!-- ================= VIEW MODAL ================= -->
+
+<div class="modal-overlay" *ngIf="showViewModal">
+  <div class="modal-card">
+
+    <h3>Feedback Details</h3>
+
+    <p><strong>User:</strong> {{ selectedFeedback?.name }}</p>
+
+    <p>
+      <strong>Rating:</strong>
+      <span class="star" *ngFor="let s of [].constructor(selectedFeedback?.rating)">★</span>
+      <span class="star grey" *ngFor="let s of [].constructor(5 - selectedFeedback?.rating)">★</span>
+    </p>
+
+    <p><strong>Date:</strong> {{ selectedFeedback?.created_at | date:'medium' }}</p>
+
+    <hr>
+
+    <p class="full-message">
+      {{ selectedFeedback?.message }}
+    </p>
+
+    <div class="modal-footer">
+      <button class="btn cancel" (click)="closeViewModal()">Close</button>
+    </div>
+
   </div>
 </div>

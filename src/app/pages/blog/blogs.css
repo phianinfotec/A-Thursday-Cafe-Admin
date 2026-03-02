@@ -158,6 +158,10 @@ tbody tr:hover {
   transform: scale(1.05);
   opacity: 0.9;
 }
+.btn.view {
+  background: linear-gradient(135deg, #1976d2, #0d47a1);
+  color: #fff;
+}
 
 /* ===============================
    MODAL OVERLAY
@@ -312,4 +316,35 @@ tbody tr:hover {
   .btn {
     width: 100%;
   }
+}
+
+/* BLOG VIEW MODAL */
+.blog-view-card {
+  max-width: 750px;
+}
+
+
+.view-blog-img {
+  width: 30%;
+  height: 30%;
+  border-radius: 18px;
+  margin: 18px 0;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+}
+
+.meta {
+  color: #6f4e37;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.view-content {
+  line-height: 1.8;
+  color: #3e2723;
+  margin-top: 12px;
+  white-space: pre-line;
+}
+
+.view-status {
+  margin-top: 15px;
 }

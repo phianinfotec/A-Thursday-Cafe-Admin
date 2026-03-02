@@ -1,10 +1,4 @@
-import {
-  Component,
-  OnInit,
-  AfterViewInit,
-  ViewChild,
-  inject
-} from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, inject } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -13,7 +7,7 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
-import { BlogService } from '../../services/blog.service'
+import { BlogService } from '../../services/blog.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -25,12 +19,14 @@ import { environment } from '../../../environments/environment';
     MatPaginatorModule,
     MatSortModule,
     MatInputModule,
-    MatFormFieldModule
+    MatFormFieldModule,
   ],
   templateUrl: './blogs.html',
-  styleUrls: ['./blogs.css']
+  styleUrls: ['./blogs.css'],
 })
 export class BlogsComponent implements OnInit, AfterViewInit {
+  showViewModal = false;
+  selectedBlog: any = null;
 
   private blogService = inject(BlogService);
 
@@ -41,7 +37,7 @@ export class BlogsComponent implements OnInit, AfterViewInit {
     'content',
     'created_at',
     'status',
-    'action'
+    'action',
   ];
 
   dataSource = new MatTableDataSource<any>([]);
@@ -79,14 +75,22 @@ export class BlogsComponent implements OnInit, AfterViewInit {
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filterPredicate = (data: any, filter: string) =>
-      Object.values(data).some(val =>
-        val?.toString().toLowerCase().includes(filter)
-      );
+      Object.values(data).some((val) => val?.toString().toLowerCase().includes(filter));
 
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
   getImageUrl(image: string): string {
-    return `${environment.API_BASE_URL}/assets/blogs/${image}`;
+    return `${environment.API_URL}/assets/img/${image}`;
   }
+
+  openViewModal(blog: any) {
+  this.selectedBlog = blog;
+  this.showViewModal = true;
+}
+
+closeViewModal() {
+  this.showViewModal = false;
+  this.selectedBlog = null;
+}
 }

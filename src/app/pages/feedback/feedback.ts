@@ -1,10 +1,4 @@
-import {
-  Component,
-  OnInit,
-  AfterViewInit,
-  ViewChild,
-  inject
-} from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, inject } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -24,23 +18,17 @@ import { FeedbackService } from '../../services/feedback.service';
     MatPaginatorModule,
     MatSortModule,
     MatInputModule,
-    MatFormFieldModule
+    MatFormFieldModule,
   ],
   templateUrl: './feedback.html',
-  styleUrls: ['./feedback.css']
+  styleUrls: ['./feedback.css'],
 })
 export class FeedbackComponent implements OnInit, AfterViewInit {
-
   private feedbackService = inject(FeedbackService);
+  showViewModal = false;
+  selectedFeedback: any = null;
 
-  displayedColumns: string[] = [
-    'name',
-    'rating',
-    'message',
-    'created_at',
-    'status',
-    'action'
-  ];
+  displayedColumns: string[] = ['name', 'rating', 'message', 'created_at', 'status', 'action'];
 
   dataSource = new MatTableDataSource<any>([]);
 
@@ -78,10 +66,17 @@ export class FeedbackComponent implements OnInit, AfterViewInit {
     const filterValue = (event.target as HTMLInputElement).value;
 
     this.dataSource.filterPredicate = (data: any, filter: string) =>
-      Object.values(data).some(val =>
-        val?.toString().toLowerCase().includes(filter)
-      );
+      Object.values(data).some((val) => val?.toString().toLowerCase().includes(filter));
 
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
+  openViewModal(feedback: any) {
+  this.selectedFeedback = feedback;
+  this.showViewModal = true;
+}
+
+closeViewModal() {
+  this.showViewModal = false;
+  this.selectedFeedback = null;
+}
 }
