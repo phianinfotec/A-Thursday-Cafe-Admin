@@ -8,6 +8,7 @@ import { authGuard } from './auth/auth.guard';
 import { HomeComponent } from './pages/home/home';
 import { MainCategoryComponent } from './pages/main-category/main-category';
 import { BannerComponent } from './pages/banner/banner';
+import { BlogsComponent } from './pages/blog/blogs';
 
 export const routes: Routes = [
 
@@ -29,6 +30,7 @@ export const routes: Routes = [
       { path: 'products', component: ProductsComponent },
       { path: 'category', component: CategoryComponent },
       { path: 'main-category', component: MainCategoryComponent },
+      { path: 'blogs', component: BlogsComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
