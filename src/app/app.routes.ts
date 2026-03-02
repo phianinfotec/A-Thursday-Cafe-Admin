@@ -9,6 +9,7 @@ import { HomeComponent } from './pages/home/home';
 import { MainCategoryComponent } from './pages/main-category/main-category';
 import { BannerComponent } from './pages/banner/banner';
 import { BlogsComponent } from './pages/blog/blogs';
+import { FeedbackComponent } from './pages/feedback/feedback';
 
 export const routes: Routes = [
 
@@ -31,6 +32,7 @@ export const routes: Routes = [
       { path: 'category', component: CategoryComponent },
       { path: 'main-category', component: MainCategoryComponent },
       { path: 'blogs', component: BlogsComponent },
+      { path: 'feedback', component: FeedbackComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

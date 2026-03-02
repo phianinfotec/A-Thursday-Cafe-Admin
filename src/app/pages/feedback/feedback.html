@@ -1,0 +1,95 @@
+<div class="products-container">
+  <div class="products-card">
+
+    <!-- TOP BAR -->
+    <div class="products-top-bar">
+      <div>
+        <h2>⭐ Feedback Management</h2>
+      </div>
+
+      <div class="actions-section">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search Feedback</mat-label>
+          <input matInput (keyup)="applyFilter($event)" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrapper">
+      <table mat-table [dataSource]="dataSource" matSort>
+
+        <!-- USER -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>User</th>
+          <td mat-cell *matCellDef="let f">{{ f.name }}</td>
+        </ng-container>
+
+        <!-- RATING -->
+        <ng-container matColumnDef="rating">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Rating</th>
+          <td mat-cell *matCellDef="let f">
+            <span class="star" *ngFor="let s of [].constructor(f.rating)">★</span>
+            <span class="star grey" *ngFor="let s of [].constructor(5 - f.rating)">★</span>
+          </td>
+        </ng-container>
+
+        <!-- MESSAGE -->
+        <ng-container matColumnDef="message">
+          <th mat-header-cell *matHeaderCellDef>Message</th>
+          <td mat-cell *matCellDef="let f">
+            {{ f.message | slice:0:80 }}...
+          </td>
+        </ng-container>
+
+        <!-- DATE -->
+        <ng-container matColumnDef="created_at">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+          <td mat-cell *matCellDef="let f">
+            {{ f.created_at | date:'medium' }}
+          </td>
+        </ng-container>
+
+        <!-- STATUS -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let f">
+            <span class="badge"
+              [class.approved]="f.is_approved == 1"
+              [class.pending]="f.is_approved == 0">
+              {{ f.is_approved == 1 ? 'Approved' : 'Pending' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- ACTION -->
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef>Action</th>
+          <td mat-cell *matCellDef="let f">
+
+            <button *ngIf="f.is_approved == 0"
+              class="btn edit"
+              (click)="approveFeedback(f.id)">
+              Approve
+            </button>
+
+            <button class="btn delete"
+              (click)="removeFeedback(f.id)">
+              Remove
+            </button>
+
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+      </table>
+
+      <mat-paginator [pageSize]="5"
+        [pageSizeOptions]="[5,10,20]">
+      </mat-paginator>
+
+    </div>
+  </div>
+</div>
