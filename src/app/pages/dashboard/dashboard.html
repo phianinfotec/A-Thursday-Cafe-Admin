@@ -1,5 +1,4 @@
 <div class="dashboard-container" *ngIf="dashboardData">
-
   <!-- ================= SUMMARY CARDS ================= -->
   <div class="stats-grid">
     <div class="stat-card">
@@ -20,42 +19,94 @@
 
   <!-- ================= CUSTOMER TABLE ================= -->
   <div class="dashboard-card">
-    <h3>Last 5 Customers</h3>
+    <!-- TOP BAR -->
+    <div class="products-top-bar">
+      <h3>Customers List</h3>
 
+      <div class="actions-section">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search Customer</mat-label>
+          <input matInput (keyup)="applyFilter($event)" />
+        </mat-form-field>
+      </div>
+    </div>
+
+    <!-- TABLE -->
     <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Mobile</th>
-            <th>Joined</th>
-          </tr>
-        </thead>
+      <table mat-table [dataSource]="dataSource" matSort>
+        <!-- INDEX -->
+        <ng-container matColumnDef="index">
+          <th mat-header-cell *matHeaderCellDef>#</th>
+          <td mat-cell *matCellDef="let element; let i = index">
+            {{ i + 1 }}
+          </td>
+        </ng-container>
 
-        <tbody>
-          <tr *ngFor="let customer of dashboardData.last5Customers; let i = index"
-              (click)="viewCustomer(customer.id)"
-              class="clickable-row">
-            <td>{{ i + 1 }}</td>
-            <td>{{ customer.username }}</td>
-            <td>{{ customer.email }}</td>
-            <td>{{ customer.mobile }}</td>
-            <td>{{ customer.created_at | date:'short' }}</td>
-          </tr>
-        </tbody>
+        <!-- NAME -->
+        <ng-container matColumnDef="username">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.username }}
+          </td>
+        </ng-container>
+
+        <!-- EMAIL -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.email }}
+          </td>
+        </ng-container>
+
+        <!-- MOBILE -->
+        <ng-container matColumnDef="mobile">
+          <th mat-header-cell *matHeaderCellDef>Mobile</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.mobile }}
+          </td>
+        </ng-container>
+
+        <!-- JOINED -->
+        <ng-container matColumnDef="created_at">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Joined</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.created_at | date: 'short' }}
+          </td>
+        </ng-container>
+
+        <!-- ACTION -->
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef>Action</th>
+          <td mat-cell *matCellDef="let element">
+            <button class="btn view" (click)="viewCustomer(element.id)">View</button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" class="clickable-row"></tr>
       </table>
+
+      <!-- <tr
+        *ngFor="let customer of dashboardData.last5Customers; let i = index"
+        (click)="viewCustomer(customer.id)"
+        class="clickable-row"
+      >
+        <td>{{ i + 1 }}</td>
+        <td>{{ customer.username }}</td>
+        <td>{{ customer.email }}</td>
+        <td>{{ customer.mobile }}</td>
+        <td>{{ customer.created_at | date: 'short' }}</td>
+      </tr> -->
+
+      <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons>
+      </mat-paginator>
     </div>
   </div>
-
 </div>
 
 <!-- ================= PREMIUM MODAL ================= -->
 <div class="modal-overlay" *ngIf="selectedCustomer" (click)="closeModal()">
-
   <div class="modal-content" (click)="$event.stopPropagation()">
-
     <button class="close-btn" (click)="closeModal()">✖</button>
 
     <!-- CUSTOMER DETAILS -->
@@ -65,7 +116,7 @@
         <p><strong>Name:</strong> {{ selectedCustomer.user.username }}</p>
         <p><strong>Email:</strong> {{ selectedCustomer.user.email }}</p>
         <p><strong>Mobile:</strong> {{ selectedCustomer.user.mobile }}</p>
-        <p><strong>Joined:</strong> {{ selectedCustomer.user.created_at | date:'medium' }}</p>
+        <p><strong>Joined:</strong> {{ selectedCustomer.user.created_at | date: 'medium' }}</p>
       </div>
     </div>
 
@@ -119,23 +170,17 @@
                   {{ order.status }}
                 </span>
               </td>
-              <td>{{ order.created_at | date:'short' }}</td>
+              <td>{{ order.created_at | date: 'short' }}</td>
             </tr>
           </tbody>
         </table>
       </div>
 
       <ng-template #noOrders>
-        <div class="no-order">
-          No orders yet by this customer.
-        </div>
+        <div class="no-order">No orders yet by this customer.</div>
       </ng-template>
-
     </div>
-
   </div>
 </div>
 
-<div *ngIf="!dashboardData" class="loading-box">
-  Loading dashboard...
-</div>
+<!-- <div *ngIf="!dashboardData" class="loading-box">Loading dashboard...</div> -->
