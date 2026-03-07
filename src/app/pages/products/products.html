@@ -87,6 +87,21 @@
           </td>
         </ng-container>
 
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+
+          <td mat-cell *matCellDef="let p">
+            <button
+              class="status-btn"
+              [ngClass]="p.status == 1 ? 'active' : 'inactive'"
+              (click)="toggleStatus(p)"
+              [disabled]="p.loading"
+            >
+              {{p.loading ? 'Updating...' : (p.status==1 ? 'Active':'Inactive')}}
+            </button>
+          </td>
+        </ng-container>
+
         <!-- ACTION -->
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef>Action</th>

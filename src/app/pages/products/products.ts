@@ -55,6 +55,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     'earnPercent',
     'redeemPercent',
     'isPopular',
+    'status',
     'action',
   ];
 
@@ -110,6 +111,7 @@ export class ProductsComponent implements OnInit, AfterViewInit {
         earnPercent: p.earn_beans,
         redeemPercent: p.redeem_beans,
         image: p.image,
+        status: p.status, // ✅ add
         isPopular: p.is_popular == 1 ? 'Yes' : 'No',
         foodType: p.food_type === 'veg' ? 'Veg' : 'Non-Veg', // ✅
         description: p.description,
@@ -247,6 +249,29 @@ export class ProductsComponent implements OnInit, AfterViewInit {
     this.productService.deleteProduct(this.productToDelete.id).subscribe(() => {
       this.loadProducts();
       this.closeDeleteModal();
+    });
+  }
+  toggleStatus(product: any) {
+    if (product.loading) return;
+
+    const newStatus = product.status === 1 ? 0 : 1;
+
+    product.status = newStatus;
+    product.loading = true;
+
+    this.productService.updateStatus(product.id, newStatus).subscribe({
+      next: () => {
+        product.loading = false;
+
+        // table refresh
+        this.dataSource.data = [...this.dataSource.data];
+      },
+      error: () => {
+        product.status = newStatus === 1 ? 0 : 1;
+        product.loading = false;
+
+        this.dataSource.data = [...this.dataSource.data];
+      },
     });
   }
 }

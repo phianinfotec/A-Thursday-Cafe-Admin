@@ -39,4 +39,8 @@ export class ProductService {
   getPopularProducts(): Observable<any> {
     return this.http.get(`${this.apiUrl}/popular`);
   }
+
+  updateStatus(id:number,status:number){
+  return this.http.patch(`${this.apiUrl}/${id}/status`,{status});
+}
 }
